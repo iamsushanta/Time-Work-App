@@ -9,7 +9,7 @@ const val TAG = "AppDataBase"
 const val DATABASE_NAME = "TimeWork"
 const val DATABASE_VERSION = 1
 
-internal class AppDataBase constructor(context: Context) : SQLiteOpenHelper(
+internal class AppDataBase private constructor(context: Context) : SQLiteOpenHelper(
     context, DATABASE_NAME,
     null, DATABASE_VERSION
 ) {
@@ -35,4 +35,21 @@ internal class AppDataBase constructor(context: Context) : SQLiteOpenHelper(
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         TODO("Not yet implemented")
     }
+
+    // This code SingletonHolder Class call easy way for understand
+    companion object : SingletonHolder<AppDataBase,Context> (::AppDataBase)
+
+
+//    companion object {
+//
+//
+//        @Volatile
+//        var instance:AppDataBase? = null
+//
+//        fun getInstance(context: Context):AppDataBase =
+//         instance ?: synchronized(AppDataBase)  {
+//             instance ?: AppDataBase(context).also { instance = it }
+//         }
+//
+//    }
 }
