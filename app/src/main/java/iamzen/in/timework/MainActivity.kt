@@ -1,13 +1,14 @@
 package iamzen.`in`.timework
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
-import com.google.android.material.snackbar.Snackbar
 import iamzen.`in`.timework.databinding.ActivityMainBinding
 
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -22,10 +23,28 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
+
+        val cursor = contentResolver.query(TaskContract.buildUriFromId(2),null,null,null,null)
+        Log.d(TAG,"cursor is a $cursor ")
+        Log.d(TAG,"**************************")
+        cursor?.use {
+            while(it.moveToNext()){
+                    val id = it.getLong(0)
+                    val name = it.getString(1)
+                    val description = it.getString(2)
+                    val shortOrder = it.getString(3)
+                    val result = "id $id name $name description $description shortOrder $shortOrder"
+                    Log.d(TAG,"result is $result")
+
+            }
+
+            }
+        Log.d(TAG,"******************")
+
+
+
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

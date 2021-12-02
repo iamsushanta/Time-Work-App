@@ -1,13 +1,18 @@
 package iamzen.`in`.timework
 
+/**
+ * Author Name: Sushanta Das
+ *
+ * App DataBase only know [AppProvider] class
+ */
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-const val TAG = "AppDataBase"
-const val DATABASE_NAME = "TimeWork"
-const val DATABASE_VERSION = 1
+private const val TAG = "AppDataBase"
+const val DATABASE_NAME = "TimeWork.db"
+const val DATABASE_VERSION = 3
 
 internal class AppDataBase private constructor(context: Context) : SQLiteOpenHelper(
     context, DATABASE_NAME,
@@ -21,11 +26,14 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
     override fun onCreate(db: SQLiteDatabase) {
         //CREATE TABLE Task(_id INTEGER PRIMARY KEY NOT NULL,Name TEXT NOT NULL,Description TEXT,ShortOrder INTEGER ); ̥
 
+        Log.d(TAG,"onCreate Start ")
         val sSql = """CREATE TABLE ${TaskContract.TABLE_NAME}(
             ${TaskContract.Task.TASK_ID} INTEGER PRIMARY KEY NOT NULL,
             ${TaskContract.Task.TASK_NAME} TEXT NOT NULL,
             ${TaskContract.Task.TASK_DESCRIPTION} TEXT,
-            ${TaskContract.Task.TASK_SHORT_ORDER} INTEGER);""".trimIndent()
+            ${TaskContract.Task.TASK_SHORT_ORDER} INTEGER);""".replaceIndent(" ")
+
+        Log.d(TAG,sSql)
 
         db.execSQL(sSql)
 
@@ -33,7 +41,15 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"OnUpgrade start")
+        when(oldVersion){
+            1 -> {
+                // some code hare
+                Log.d(TAG,"Some Code hare")
+            } else -> {
+                Log.d(TAG,"Exception Unknown newVersion $newVersion")
+            }
+        }
     }
 
     // This code SingletonHolder Class call easy way for understand
