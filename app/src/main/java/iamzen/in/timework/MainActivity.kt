@@ -1,5 +1,6 @@
 package iamzen.`in`.timework
 
+import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -17,6 +18,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+//        Add a new data in databases
+//        testInsert("WHY COMPANY ","WORLD'S NO 1 VALUABLE COMPANY",3)
+//        testInsert("zen ","hy my name is zen",2)
+//        testInsert("sushanta ","Hy my name is sushanta",1)
+
+//        update All row in databases
+//        testUpdate("zen","my Name is zen I am specialist of Artificial Intelligence ")
+
+        // update one row in databases
+        testUpdateTwo(2,"sushanta","Hy I am avneet kaur",3,null,null)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -42,10 +54,71 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG,"******************")
 
 
-
+       
 
 
     }
+
+    private fun testInsert(name: String,description:String,shortOrder:Int){
+        val value = ContentValues().apply {
+            put(TaskContract.Collum.TASK_NAME,name)
+            put(TaskContract.Collum.TASK_DESCRIPTION,description)
+            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
+        }
+
+        val valueInsert = contentResolver.insert(TaskContract.CONTENT_URI,value)
+
+        Log.d(TAG,"insert is successfully $valueInsert")
+
+    }
+
+    // all row delete in function when you call modified
+    private fun testDelete(name:String, description: String? = null, shortOrder:Int? = null){
+        val value = ContentValues().apply {
+            put(TaskContract.Collum.TASK_NAME,name)
+            put(TaskContract.Collum.TASK_DESCRIPTION,description)
+            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
+        }
+
+        val valueUpdate = contentResolver.update(TaskContract.CONTENT_URI,value,null,null)
+    }
+
+    // All item will be update
+    private fun testUpdate(name:String, description: String? = null, shortOrder:Int? = null){
+        val value = ContentValues().apply {
+            put(TaskContract.Collum.TASK_NAME,name)
+            put(TaskContract.Collum.TASK_DESCRIPTION,description)
+            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
+        }
+
+        val valueUpdate = contentResolver.update(TaskContract.CONTENT_URI,value,null,null)
+    }
+
+    // single item will update
+    private fun testUpdateTwo(rowNumber:Long,name:String,
+                              description: String? = null,
+                              shortOrder:Int? = null,
+                              selection:String? = null,
+                              selectionArgs:Array<String>? = null
+    ){
+        val value = ContentValues().apply {
+            put(TaskContract.Collum.TASK_NAME,name)
+            put(TaskContract.Collum.TASK_DESCRIPTION,description)
+            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
+        }
+
+        val whichRow = TaskContract.buildUriFromId(rowNumber)
+
+        // also which row under which value update
+//        val selection = "${TaskContract.Collum.TASK_SHORT_ORDER} = ?;"
+//        val selectionArgs = arrayOf("3")
+        val valueUpdate = contentResolver.update(whichRow
+            ,value
+            , selection
+            , selectionArgs)
+    }
+
+    
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
