@@ -4,25 +4,29 @@ import android.content.ContentUris
 import android.net.Uri
 import android.provider.BaseColumns
 
-object TaskContract {
-    internal const val TABLE_NAME = "Task"
+object TimingContract {
 
-    val CONTENT_URI:Uri = Uri.withAppendedPath(CONTENT_URI_AUTHORITY,TABLE_NAME)
+
+    internal const val TABLE_NAME = "Timing"
+
+    // Timing Table catch
+    val CONTENT_URI: Uri = Uri.withAppendedPath(CONTENT_URI_AUTHORITY,TABLE_NAME)
     val CONTENT_TYPE = "vnd.android.cursor.dir/vnd.$CONTENT_AUTHORITY.$TABLE_NAME"
     val CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.$CONTENT_AUTHORITY.$TABLE_NAME"
 
+    // Timing field
     object Collum {
-        const val TASK_ID = BaseColumns._ID
-        const val TASK_NAME = "Name"
-        const val TASK_DESCRIPTION = "Description"
-        const val TASK_SHORT_ORDER = "TaskShortOrder"
+        const val ID = BaseColumns._ID
+        const val TIMING_TASK_ID = "TimingId"
+        const val TIMING_START_TIME = "StartTiming"
+        const val TIMING_TASK_DURATION = "TimingDuration"
     }
 
     fun getId(uri: Uri):Long {
         return ContentUris.parseId(uri)
     }
 
-    fun buildUriFromId(id:Long):Uri{
+    fun buildUriFromId(id:Long): Uri {
         return ContentUris.withAppendedId(CONTENT_URI,id)
     }
-    }
+}

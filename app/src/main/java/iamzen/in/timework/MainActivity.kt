@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val cursor = contentResolver.query(TaskContract.buildUriFromId(2),null,null,null,null)
+        val cursor = contentResolver.query(TaskContract.CONTENT_URI,null,null,null,null)
         Log.d(TAG,"cursor is a $cursor ")
         Log.d(TAG,"**************************")
         cursor?.use {

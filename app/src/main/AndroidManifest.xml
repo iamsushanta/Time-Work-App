@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <provider
-            android:authorities="iamzen.in.timework.provider"
+            android:authorities="${applicationId}.provider"
             android:name="iamzen.in.timework.AppProvider"
             android:exported="false"/>
     </application>

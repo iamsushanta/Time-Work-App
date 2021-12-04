@@ -28,10 +28,10 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
 
         Log.d(TAG,"onCreate Start ")
         val sSql = """CREATE TABLE ${TaskContract.TABLE_NAME}(
-            ${TaskContract.Task.TASK_ID} INTEGER PRIMARY KEY NOT NULL,
-            ${TaskContract.Task.TASK_NAME} TEXT NOT NULL,
-            ${TaskContract.Task.TASK_DESCRIPTION} TEXT,
-            ${TaskContract.Task.TASK_SHORT_ORDER} INTEGER);""".replaceIndent(" ")
+            ${TaskContract.Collum.TASK_ID} INTEGER PRIMARY KEY NOT NULL,
+            ${TaskContract.Collum.TASK_NAME} TEXT NOT NULL,
+            ${TaskContract.Collum.TASK_DESCRIPTION} TEXT,
+            ${TaskContract.Collum.TASK_SHORT_ORDER} INTEGER);""".replaceIndent(" ")
 
         Log.d(TAG,sSql)
 
