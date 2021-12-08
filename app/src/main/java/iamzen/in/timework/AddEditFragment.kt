@@ -2,6 +2,7 @@ package iamzen.`in`.timework
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,26 +18,32 @@ private const val ARG_TASK = "task"
  * Use the [AddEditFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
+private const val TAG = "AddEditFragment"
 class AddEditFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var task: Task? = null
     private var listener:OnSaveClicked? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG,"OnCreate starts")
         super.onCreate(savedInstanceState)
         task = arguments?.getParcelable(ARG_TASK)
 
     }
 
     override fun onCreateView(
+
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG,"onCreateView Starts")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_edit, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        Log.d(TAG,"onActivityCreated starts")
         addEditSubmit.setOnClickListener{
             listener?.onSaveClicked()
         }
@@ -44,17 +51,19 @@ class AddEditFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        Log.d(TAG,"OnAttach starts")
         if (context is OnSaveClicked){
             listener = context
         } else throw RuntimeException(context.toString() + "must implement OnSaveClicked")
     }
 
     interface OnSaveClicked{
+
         fun onSaveClicked()
     }
 
     override fun onDetach() {
-
+        Log.d(TAG,"onDetach starts")
         super.onDetach()
         listener = null
     }
@@ -70,9 +79,62 @@ class AddEditFragment : Fragment() {
         @JvmStatic
         fun newInstance(task:Task?) =
             AddEditFragment().apply {
+                Log.d(TAG,"newInstance starts")
                 arguments = Bundle().apply {
                     putParcelable(ARG_TASK, task)
                 }
             }
     }
+
+
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated: called")
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewStateRestored: called")
+        super.onViewStateRestored(savedInstanceState)
+    }
+
+    override fun onStart() {
+        Log.d(TAG, "onStart: called")
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Log.d(TAG, "onResume: called")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        Log.d(TAG, "onPause: called")
+        super.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        Log.d(TAG, "onSaveInstanceState: called")
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop: called")
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        Log.d(TAG, "onDestroyView: called")
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy: called")
+        super.onDestroy()
+    }
+
+
 }
