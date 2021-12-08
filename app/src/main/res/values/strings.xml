@@ -11,4 +11,19 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menuAddButton">Add</string>
+    <string name="menuMainDuration">duration</string>
+    <string name="menuMainAbout">about</string>
+    <string name="menuMainGenarate">genrate</string>
+    <string name="MainTitle">Add Your Task</string>
+    <string name="TitleOfTask"> Android App Development Task</string>
+    <string name="DescriptionOfTask">Android App Development with kotlin</string>
+    <string name="Task_Delete">Delete Button</string>
+    <string name="EditTask">editButton</string>
+    <string name="addEditName">Task Name (Required)</string>
+    <string name="addEditDescription">Task Description (Optional)</string>
+    <string name="addEditShortOrder"> Short Order (Low To High)</string>
+    <string name="addEditSubmit">Save</string>
+    <string name="SubmitButton"> Submit </string>
+    <string name="floatinactionbutton">floatinActionButton</string>
 </resources>

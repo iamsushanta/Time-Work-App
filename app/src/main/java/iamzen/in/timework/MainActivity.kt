@@ -1,17 +1,20 @@
 package iamzen.`in`.timework
 
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.navigation.ui.AppBarConfiguration
 import iamzen.`in`.timework.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.contein_main.*
 
 private const val TAG = "MainActivity"
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
 
+    private var mPane = false
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
@@ -19,39 +22,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
-//        Add a new data in databases
-//        testInsert("WHY COMPANY ","WORLD'S NO 1 VALUABLE COMPANY",3)
-//        testInsert("zen ","hy my name is zen",2)
-//        testInsert("sushanta ","Hy my name is sushanta",1)
-
-//        update All row in databases
-//        testUpdate("zen","my Name is zen I am specialist of Artificial Intelligence ")
-
-        // update one row in databases
-        testUpdateTwo(2,"sushanta","Hy I am avneet kaur",3,null,null)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(toolbar)
 
 
 
-        val cursor = contentResolver.query(TaskContract.CONTENT_URI,null,null,null,null)
-        Log.d(TAG,"cursor is a $cursor ")
-        Log.d(TAG,"**************************")
-        cursor?.use {
-            while(it.moveToNext()){
-                    val id = it.getLong(0)
-                    val name = it.getString(1)
-                    val description = it.getString(2)
-                    val shortOrder = it.getString(3)
-                    val result = "id $id name $name description $description shortOrder $shortOrder"
-                    Log.d(TAG,"result is $result")
-
-            }
-
-            }
-        Log.d(TAG,"******************")
 
 
        
@@ -59,65 +36,21 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun testInsert(name: String,description:String,shortOrder:Int){
-        val value = ContentValues().apply {
-            put(TaskContract.Collum.TASK_NAME,name)
-            put(TaskContract.Collum.TASK_DESCRIPTION,description)
-            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
+    private fun removeEditFragment(fragment: Fragment? = null){
+        if(fragment != null){
+            supportFragmentManager.beginTransaction().remove(fragment)
         }
 
-        val valueInsert = contentResolver.insert(TaskContract.CONTENT_URI,value)
-
-        Log.d(TAG,"insert is successfully $valueInsert")
-
+        task_details_container.visibility = if(mPane) View.VISIBLE else View.GONE
+        mainFragment.visibility = View.VISIBLE
     }
 
-    // all row delete in function when you call modified
-    private fun testDelete(name:String, description: String? = null, shortOrder:Int? = null){
-        val value = ContentValues().apply {
-            put(TaskContract.Collum.TASK_NAME,name)
-            put(TaskContract.Collum.TASK_DESCRIPTION,description)
-            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
-        }
-
-        val valueUpdate = contentResolver.update(TaskContract.CONTENT_URI,value,null,null)
+    override fun onSaveClicked() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
+        removeEditFragment(fragment)
     }
 
-    // All item will be update
-    private fun testUpdate(name:String, description: String? = null, shortOrder:Int? = null){
-        val value = ContentValues().apply {
-            put(TaskContract.Collum.TASK_NAME,name)
-            put(TaskContract.Collum.TASK_DESCRIPTION,description)
-            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
-        }
-
-        val valueUpdate = contentResolver.update(TaskContract.CONTENT_URI,value,null,null)
-    }
-
-    // single item will update
-    private fun testUpdateTwo(rowNumber:Long,name:String,
-                              description: String? = null,
-                              shortOrder:Int? = null,
-                              selection:String? = null,
-                              selectionArgs:Array<String>? = null
-    ){
-        val value = ContentValues().apply {
-            put(TaskContract.Collum.TASK_NAME,name)
-            put(TaskContract.Collum.TASK_DESCRIPTION,description)
-            put(TaskContract.Collum.TASK_SHORT_ORDER,shortOrder)
-        }
-
-        val whichRow = TaskContract.buildUriFromId(rowNumber)
-
-        // also which row under which value update
-//        val selection = "${TaskContract.Collum.TASK_SHORT_ORDER} = ?;"
-//        val selectionArgs = arrayOf("3")
-        val valueUpdate = contentResolver.update(whichRow
-            ,value
-            , selection
-            , selectionArgs)
-    }
-
+    //
     
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -130,10 +63,17 @@ class MainActivity : AppCompatActivity() {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+         when (item.itemId) {
+            R.id.menumain_addTask -> taskEdiRequest(null)
+//            R.id.menumain_setting -> true
         }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun taskEdiRequest(task:Task?){
+        val newInstance = AddEditFragment.newInstance(task)
+        supportFragmentManager.beginTransaction().replace(R.id.task_details_container,newInstance).commit()
+
     }
 
 

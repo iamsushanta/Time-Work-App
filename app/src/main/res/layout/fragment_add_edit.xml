@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <EditText
+        android:id="@+id/addEditName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/addEditName"
+        android:inputType="textNoSuggestions"
+        android:maxLength="64"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/addEditDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/addEditDescription"
+        android:inputType="textMultiLine"
+        android:maxLength="256"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/addEditShortOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/addEditShortOrder"
+        android:inputType="number"
+        android:maxLength="9"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/addEditSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:drawableStart="@android:drawable/ic_menu_save"
+        android:text="@string/SubmitButton"
+        app:backgroundTint="#130F0F"
+        app:icon="@android:drawable/ic_menu_save" />
+</LinearLayout>

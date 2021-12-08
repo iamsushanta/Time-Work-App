@@ -1,9 +1,15 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
 }
 
+androidExtensions{
+    experimental = true
+}
 android {
+
+
     compileSdk 31
 
     defaultConfig {

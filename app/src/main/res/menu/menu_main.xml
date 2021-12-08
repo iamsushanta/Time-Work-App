@@ -3,8 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="iamzen.in.timework.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:id="@+id/menumain_addTask"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="10"
+        android:title="@string/menuAddButton"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menumain_duration"
+        android:icon="@android:drawable/ic_menu_view"
+        android:orderInCategory="20"
+        android:title="@string/menuMainDuration"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menumain_setting"
+        android:orderInCategory="30"
         android:title="@string/action_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menumain_aboutApp"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:orderInCategory="40"
+        android:title="@string/menuMainAbout"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menumain_ganerate"
+        android:orderInCategory="50"
+        android:title="@string/menuMainGenarate"
+        android:visible="false"
         app:showAsAction="never" />
 </menu>
