@@ -3,8 +3,13 @@ package iamzen.`in`.timework
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.fragment_main_acitivity_frag_ment.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,17 +23,27 @@ private const val ARG_PARAM2 = "param2"
  */
 private const val TAG = "MainActivityFragment"
 class MainActivityFragMeant : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+
+    private val viewModel by lazy{ ViewModelProviders.of(requireActivity()).get(TimeWorkViewModel::class.java)}
+    private val mAdapter = CursorRecyclerViewAdapter(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"onCreated starts")
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        viewModel.cursor.observe(this, { cursor -> mAdapter.swapCursor(cursor)?.close()})
+
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        Log.d(TAG,"onCreateView starts")
+        return inflater.inflate(R.layout.fragment_main_acitivity_frag_ment,container,false)
+
     }
 
     override fun onAttach(context: Context) {
@@ -41,6 +56,11 @@ class MainActivityFragMeant : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated: called")
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG,"listOfItem starts")
+
+        List_Of_Item.layoutManager = LinearLayoutManager(context)
+        List_Of_Item.adapter = mAdapter
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
         super.onCreate(savedInstanceState)
         Log.d(TAG,"onCreate starts")
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
@@ -55,6 +54,7 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
 
         task_details_container.visibility = if(mTwoPane) View.INVISIBLE else View.GONE
         mainFragment.visibility = View.VISIBLE
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     override fun onSaveClicked() {
@@ -79,8 +79,24 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
          when (item.itemId) {
             R.id.menumain_addTask -> taskEdiRequest(null)
 //            R.id.menumain_setting -> true
+             android.R.id.home -> {
+                 Log.d(TAG,"home button is clicked ")
+                 val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
+                 removeEditFragment(fragment)
+             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        Log.d(TAG,"onBackPressed starts")
+
+        val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
+        if(fragment == null || mTwoPane){
+            super.onBackPressed()
+        }else{
+            removeEditFragment(fragment)
+        }
     }
 
     private fun taskEdiRequest(task:Task?){

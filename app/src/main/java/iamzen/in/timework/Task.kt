@@ -6,6 +6,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 @SuppressLint("ParcelCreator")
-class Task(val name:String,val Description:String,val ShortOrder:String): Parcelable {
+class Task(val name:String,val Description:String,val ShortOrder:Int): Parcelable {
     var id:Long = 0
 }

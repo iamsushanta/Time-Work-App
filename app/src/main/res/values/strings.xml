@@ -26,4 +26,6 @@
     <string name="addEditSubmit">Save</string>
     <string name="SubmitButton"> Submit </string>
     <string name="floatinactionbutton">floatinActionButton</string>
+    <string name="fristTimeRun">initialize</string>
+    <string name="fristTimeDescription">Hello bro add a new task And enjoy quality work</string>
 </resources>
