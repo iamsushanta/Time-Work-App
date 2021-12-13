@@ -35,7 +35,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
         Log.d(TAG ,"onBindViewHolder starts")
 
         val cursor = cursor
-        if (cursor === null || cursor.count == 0) {
+        if (cursor == null || cursor.count == 0) {
             Log.d(TAG, "cursor is a null or 0 ")
             holder.titleOfTask.setText( R.string.fristTimeRun)
             holder.DescriptionOfTask.setText(R.string.fristTimeDescription)
@@ -44,6 +44,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
         } else {
             Log.d(TAG,"else block call")
             if (!cursor.moveToPosition(position)) {
+                Log.d(TAG ,"illegalStateException called")
                 throw IllegalStateException("cursor is not a move next position $position ")
             }
 
@@ -54,33 +55,46 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
 
             )
 
+            Log.d(TAG,"task created")
             task.id = cursor.getLong(cursor.getColumnIndex(TaskContract.Collum.TASK_ID))
 
-            holder.titleOfTask.text = task.name
+            holder.titleOfTask.text = task.Name
             holder.DescriptionOfTask.text = task.Description
             holder.editTaskButton.visibility = View.VISIBLE // Todo: add A onClick
             holder.deleteTaskButton.visibility = View.VISIBLE // Todo: add A onClick
+            
 
         }
     }
 
 
     override fun getItemCount(): Int {
+        Log.d(TAG,"getItemCount starts")
         val cursor = cursor
-        val count = if (cursor == null || cursor.count == 0) 1 else cursor.count
+        Log.d(TAG,cursor.toString())
+
+        val count = if (cursor == null || cursor.count == 0) {
+            1
+        } else{
+            cursor.count
+        }
         Log.d(TAG, "returning count $count ")
         return count
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun swapCursor(newCursor: Cursor?): Cursor? {
-        val cursor = cursor
-        if (newCursor == cursor) {
+        Log.d(TAG,"swap Cursor called")
+        if (newCursor === cursor) {
+            Log.d(TAG,"newCursor is a null")
             return null
         }
-        val oldCursor = cursor
+
         val numItem = itemCount
+        val oldCursor = cursor
+        cursor = newCursor
         if(newCursor != null){
+            Log.d(TAG,"newCursor not a null $newCursor")
             notifyDataSetChanged()
         }else{
             notifyItemRangeRemoved(0,numItem)

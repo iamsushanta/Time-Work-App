@@ -52,7 +52,7 @@ class AddEditFragment : Fragment() {
             val task = task
             if(task != null){
                 Log.d(TAG,"existing view modified create task is ${task.id}")
-                addEditName.setText(task.name)
+                addEditName.setText(task.Name)
                 addEditDescription.setText(task.Description)
                 addEditShortOrder.setText(task.ShortOrder.toString())
             } else{
@@ -74,7 +74,7 @@ class AddEditFragment : Fragment() {
         val value = ContentValues()
         if(task != null){
             Log.d(TAG,"exiting item will me modified")
-            if(addEditName.text.toString() != task.name){
+            if(addEditName.text.toString() != task.Name){
                 value.put(TaskContract.Collum.TASK_NAME,addEditName.text.toString())
             }
             if(addEditDescription.text.toString() != task.Description){

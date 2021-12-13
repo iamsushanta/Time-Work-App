@@ -25,15 +25,13 @@ private const val TAG = "MainActivityFragment"
 class MainActivityFragMeant : Fragment() {
 
 
-    private val viewModel by lazy{ ViewModelProviders.of(requireActivity()).get(TimeWorkViewModel::class.java)}
+    private val viewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
     private val mAdapter = CursorRecyclerViewAdapter(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"onCreated starts")
         viewModel.cursor.observe(this, { cursor -> mAdapter.swapCursor(cursor)?.close()})
-
-
     }
 
     override fun onCreateView(

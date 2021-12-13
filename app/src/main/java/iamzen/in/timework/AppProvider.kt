@@ -89,6 +89,8 @@ class AppProvider : ContentProvider(){
         val appDatabase = AppDataBase.getInstance(context).readableDatabase
         val cursor = queryBuilder.query(appDatabase,projection,selection,selectionArgs,null,null,sortOrder)
         Log.d(TAG,"query End ${cursor.count}")
+
+
          return cursor
 
     }
@@ -139,7 +141,13 @@ class AppProvider : ContentProvider(){
 
          }
 
+        if(recordId > 0){
+            Log.d(TAG,"insert will be change")
+            context.contentResolver?.notifyChange(uri,null)
+        }
+
         Log.d(TAG,"insert end: return uri $returnUri")
+
         return returnUri
     }
 
@@ -187,6 +195,11 @@ class AppProvider : ContentProvider(){
 
             }
             else -> throw IllegalArgumentException("unknown uri $uri")
+        }
+
+        if(count > 0){
+            Log.d(TAG,"delete will be change")
+            context.contentResolver?.notifyChange(uri,null)
         }
 
         Log.d(TAG,"delete exiting $count")
@@ -247,6 +260,11 @@ class AppProvider : ContentProvider(){
         }
         
         Log.d(TAG,"update exiting $count")
+
+        if(count > 0) {
+            Log.d(TAG,"update will be change")
+            context.contentResolver?.notifyChange(uri,null)
+        }
         return count
     }
 

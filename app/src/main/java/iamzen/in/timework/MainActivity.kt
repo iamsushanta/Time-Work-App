@@ -21,10 +21,10 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"onCreate starts")
-
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
+
 
 
         mTwoPane = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -38,6 +38,10 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
             mainFragment.visibility = View.VISIBLE
         }
     }
+
+
+
+
 
     private fun showFragment(){
         Log.d(TAG,"showFragment starts")
