@@ -163,7 +163,7 @@ class AppProvider : ContentProvider(){
 
         when(match){
             TASK -> {
-                val db = AppDataBase.getInstance(context ).writableDatabase
+                val db = AppDataBase.getInstance(context).writableDatabase
                 count = db.delete(TaskContract.TABLE_NAME,selection,selectionArgs)
             }
             TASK_ID -> {
@@ -175,6 +175,8 @@ class AppProvider : ContentProvider(){
                 if(selection != null && selection.isNotEmpty()){
                     selectionCriteria += "AND $selection"
                 }
+
+
                 count = db.delete(TaskContract.TABLE_NAME,selection,selectionArgs)
 
             }

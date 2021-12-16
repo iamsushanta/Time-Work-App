@@ -15,13 +15,40 @@ private const val TAG = "CursorRecyclerViewAdt"
 class TaskViewHolder( override val containerView: View) : RecyclerView.ViewHolder(containerView) ,
      LayoutContainer{
 
+         fun bind(task:Task,listener:CursorRecyclerViewAdapter.WorkingButton){
+             titleOfTask.text = task.Name
+             DescriptionOfTask.text = task.Description
+
+             editTaskButton.visibility = View.VISIBLE
+             editTaskButton.setOnClickListener{
+                 listener.editTask(task)
+             }
+
+             deleteTaskButton.visibility = View.VISIBLE
+             deleteTaskButton.setOnClickListener{
+                 listener.deleteTask(task)
+             }
+
+             containerView.setOnLongClickListener {
+                 listener.longClick(task)
+                 true
+             }
+         }
+
 }
 
 
-class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
+class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listener:WorkingButton) :
     RecyclerView.Adapter<TaskViewHolder>() {
 
 
+
+    // interface is create. work is manage add,delete,longClick
+    interface WorkingButton{
+        fun editTask(task:Task)
+        fun deleteTask(task:Task)
+        fun longClick(task:Task)
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         Log.d(TAG ,"onCreateViewHolder starts")
 
@@ -58,12 +85,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
             Log.d(TAG,"task created")
             task.id = cursor.getLong(cursor.getColumnIndex(TaskContract.Collum.TASK_ID))
 
-            holder.titleOfTask.text = task.Name
-            holder.DescriptionOfTask.text = task.Description
-            holder.editTaskButton.visibility = View.VISIBLE // Todo: add A onClick
-            holder.deleteTaskButton.visibility = View.VISIBLE // Todo: add A onClick
-            
-
+            holder.bind(task,listener)
         }
     }
 

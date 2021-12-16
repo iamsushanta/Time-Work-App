@@ -1,7 +1,6 @@
 package iamzen.`in`.timework
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.fragment_add_edit.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,6 +27,9 @@ class AddEditFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var task: Task? = null
     private var listener:OnSaveClicked? = null
+
+    private val viewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"OnCreate starts")
         super.onCreate(savedInstanceState)
@@ -63,40 +66,25 @@ class AddEditFragment : Fragment() {
     }
 
 
-    // add a new task in a databases Or Exiting task will be modified
-    private fun saveTask(){
-        Log.d(TAG,"saveTask called")
-        val shortOrder = if(addEditShortOrder.text.isNotEmpty()){
+    private fun taskFromUri():Task{
+        Log.d(TAG,"addTask starts")
+        val shortOrder = if (addEditShortOrder.text.isNotEmpty()){
             Integer.parseInt(addEditShortOrder.text.toString())
-        } else  0
-        
-        val task = task
-        val value = ContentValues()
-        if(task != null){
-            Log.d(TAG,"exiting item will me modified")
-            if(addEditName.text.toString() != task.Name){
-                value.put(TaskContract.Collum.TASK_NAME,addEditName.text.toString())
-            }
-            if(addEditDescription.text.toString() != task.Description){
-                value.put(TaskContract.Collum.TASK_DESCRIPTION,addEditDescription.text.toString())
-            }
-            if(shortOrder != task.ShortOrder){
-                value.put(TaskContract.Collum.TASK_ID, shortOrder)
-            }
-            if (value.size() != 0){
-                activity?.contentResolver?.update(TaskContract.buildUriFromId(task.id),value,null,null)
-            }
-        } else{
-            Log.d(TAG,"new Item Add in databases")
-            if(addEditName.text.isNotEmpty()){
-                value.put(TaskContract.Collum.TASK_NAME,addEditName.text.toString())
-                if(addEditDescription.text.isNotEmpty()){
-                    value.put(TaskContract.Collum.TASK_DESCRIPTION,addEditDescription.text.toString())
-                    }
-                value.put(TaskContract.Collum.TASK_SHORT_ORDER, shortOrder)
+        } else 0
 
-            }
-            activity?.contentResolver?.insert(TaskContract.CONTENT_URI,value)
+        val newTask = Task(addEditName.text.toString(),addEditDescription.text.toString(),shortOrder)
+        newTask.id = task?.id ?: 0
+        return newTask
+
+    }
+
+
+    // add a new task in a databases Or Exiting task will be modified
+
+    private fun saveTask(){
+        val newTask = taskFromUri()
+        if (newTask != task){
+            viewModel.saveTask(newTask)
         }
     }
 

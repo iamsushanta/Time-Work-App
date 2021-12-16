@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.contein_main.*
 
 private const val TAG = "MainActivity"
-class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
+class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActivityFragMeant.ManageWorkingButton{
 
     private var mTwoPane = false
     private lateinit var binding: ActivityMainBinding
@@ -38,8 +38,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
             mainFragment.visibility = View.VISIBLE
         }
     }
-
-
 
 
 
@@ -102,6 +100,13 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked{
             removeEditFragment(fragment)
         }
     }
+
+    override fun editTaskButton(task: Task) {
+        Log.d(TAG,"editTaskButton clicked")
+        taskEdiRequest(task)
+    }
+
+
 
     private fun taskEdiRequest(task:Task?){
         val newInstance = AddEditFragment.newInstance(task)

@@ -22,11 +22,11 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 private const val TAG = "MainActivityFragment"
-class MainActivityFragMeant : Fragment() {
+class MainActivityFragMeant : Fragment(),CursorRecyclerViewAdapter.WorkingButton {
 
 
     private val viewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
-    private val mAdapter = CursorRecyclerViewAdapter(null)
+    private val mAdapter = CursorRecyclerViewAdapter(null,this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,5 +111,21 @@ class MainActivityFragMeant : Fragment() {
         super.onDetach()
     }
 
+    // working Button interface is implement
+    override fun editTask(task: Task) {
+        (activity as ManageWorkingButton?)?.editTaskButton(task)
+    }
 
+    override fun deleteTask(task: Task) {
+        viewModel.deleteTask(task.id)
+    }
+
+    override fun longClick(task: Task) {
+        TODO("Not yet implemented")
+    }
+
+    interface ManageWorkingButton{
+        fun editTaskButton(task: Task)
+
+    }
 }
