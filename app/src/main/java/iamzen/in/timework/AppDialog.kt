@@ -3,6 +3,7 @@ package iamzen.`in`.timework
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatDialogFragment
@@ -19,8 +20,8 @@ class AppDialog: AppCompatDialogFragment() {
 
     internal interface DialogEvents{
         fun setOnPositiveRid(dialogId:Int,args: Bundle)
-        fun setOnNegativeRid(dialogId:Int,args: Bundle)
-//        fun setOnDialogCancelled(dialogId:Int)
+//        fun setOnNegativeRid(dialogId:Int,args: Bundle)
+//        fun setOnCancel(dialogId:Int)
     }
 
     override fun onAttach(context: Context) {
@@ -29,22 +30,22 @@ class AppDialog: AppCompatDialogFragment() {
 
         dialogEvents = try {
             parentFragment as DialogEvents
-        } catch(e:TypeCastException) {
+        } catch(e:NullPointerException) {
             try{
                 context as DialogEvents
 
-            } catch(e:ClassCastException){
-                throw ClassCastException("Activity context $context must be implement AppDialog.DialogEvents")
+            } catch(e:TypeCastException){
+                throw TypeCastException("Activity context $context must be implement AppDialog.DialogEvents")
             }
-        }catch(e:ClassCastException){
-            throw ClassCastException("Fragment context $context must be implement AppDialog.DialogEvents")
+        }catch(e:TypeCastException){
+            throw TypeCastException("Fragment context $context must be implement AppDialog.DialogEvents")
         }
 
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         Log.d(TAG,"onCreateDialog called")
-        val builder = AlertDialog.Builder(context!!)
+        val builder = AlertDialog.Builder(requireContext())
 
         val arguments = arguments
         val dialogId:Int
@@ -56,7 +57,7 @@ class AppDialog: AppCompatDialogFragment() {
             dialogId = arguments.getInt(DIALOG_ID)
             dialogMessage = arguments.getString(DIALOG_MESSAGE)
             if (dialogId == 0 || dialogMessage == null){
-                throw IllegalArgumentException("Dialog id and or massage not have in bundle")
+                throw IllegalArgumentException("Dialog id and or massage not pressent in bundle")
             }
 
             dialogPositive = arguments.getInt(DIALOG_POSITIVE)
@@ -75,7 +76,7 @@ class AppDialog: AppCompatDialogFragment() {
                     dialogEvents?.setOnPositiveRid(dialogId,arguments)
                 }
             .setNegativeButton(dialogNegative){dialogInterface ,which ->
-            dialogEvents?.setOnNegativeRid(dialogId,arguments)
+//            dialogEvents?.setOnNegativeRid(dialogId,arguments)
         }.create()
 
 
@@ -87,4 +88,11 @@ class AppDialog: AppCompatDialogFragment() {
         super.onDetach()
         dialogEvents = null
     }
+
+    override fun onCancel(dialog: DialogInterface) {
+        Log.d(TAG,"OnCancel called")
+        val dialogId = arguments?.getInt(DIALOG_ID)
+//        dialogEvents?.setOnCancel(dialogId!!)
+    }
+
 }

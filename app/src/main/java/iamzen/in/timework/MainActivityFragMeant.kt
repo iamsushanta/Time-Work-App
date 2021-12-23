@@ -22,7 +22,12 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 private const val TAG = "MainActivityFragment"
-class MainActivityFragMeant : Fragment(),CursorRecyclerViewAdapter.WorkingButton {
+private const val DIALOG_ID_DELETED = 1
+private const val DIALOG_TASK_ID = "task_id"
+
+class MainActivityFragMeant : Fragment(),
+    CursorRecyclerViewAdapter.WorkingButton,
+    AppDialog.DialogEvents{
 
 
     private val viewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
@@ -117,15 +122,45 @@ class MainActivityFragMeant : Fragment(),CursorRecyclerViewAdapter.WorkingButton
     }
 
     override fun deleteTask(task: Task) {
-        viewModel.deleteTask(task.id)
+        Log.d(TAG,"deleteTask called ")
+        val args = Bundle().apply {
+            putInt(DIALOG_ID,DIALOG_ID_DELETED)
+            putString(DIALOG_MESSAGE,getString(R.string.dialog_message_delete,task.id,task.Name))
+            putInt(DIALOG_POSITIVE,R.string.delete_dialog)
+            putLong(DIALOG_TASK_ID,task.id) // pass  the id in the arguments .so we can retrieve id than what task callback.
+            }
+
+        val dialog = AppDialog()
+        dialog.arguments = args
+        dialog.show(childFragmentManager,null)
     }
 
     override fun longClick(task: Task) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"longClick called")
     }
 
     interface ManageWorkingButton{
         fun editTaskButton(task: Task)
 
     }
+
+    override fun setOnPositiveRid(dialogId: Int, args: Bundle) {
+        Log.d(TAG,"setOnPositiveRid called dialog id is $dialogId")
+
+        if (dialogId == DIALOG_ID_DELETED){
+            val taskId = args.getLong(DIALOG_TASK_ID)
+            if(BuildConfig.DEBUG && taskId == 0L) throw AssertionError("task id is 0")
+            viewModel.deleteTask(taskId)
+        }
+    }
+
+//    override fun setOnNegativeRid(dialogId: Int, args: Bundle) {
+//
+//        Log.d(TAG,"setONNegativeRid called")
+//    }
+//
+//    override fun setOnCancel(dialogId: Int) {
+//
+//        Log.d(TAG,"setOnCancel called")
+//    }
 }

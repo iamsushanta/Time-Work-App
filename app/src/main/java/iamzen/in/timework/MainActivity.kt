@@ -6,17 +6,21 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import iamzen.`in`.timework.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.contein_main.*
 
 private const val TAG = "MainActivity"
-class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActivityFragMeant.ManageWorkingButton{
+const val DIALOG_ID_CANCEL = 1
+class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActivityFragMeant.ManageWorkingButton,
+         AppDialog.DialogEvents{
 
     private var mTwoPane = false
-    private lateinit var binding: ActivityMainBinding
+
+    private var aboutDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +29,9 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
         setSupportActionBar(toolbar)
 
-
-
         mTwoPane = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Log.d(TAG,"mTwoPane is $mTwoPane")
-        val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
+        val fragment = findFragmentById(R.id.task_details_container)
 
         if(fragment != null){
             showFragment()
@@ -51,7 +53,8 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         Log.d(TAG,"removeEditFragment starts")
         if(fragment != null){
             Log.d(TAG,"fragment not a null")
-            supportFragmentManager.beginTransaction().remove(fragment)
+//            supportFragmentManager.beginTransaction().remove(fragment)
+            removeFragment(fragment)
         }
 
         task_details_container.visibility = if(mTwoPane) View.INVISIBLE else View.GONE
@@ -61,8 +64,7 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
     override fun onSaveClicked() {
         Log.d(TAG,"onSaveClicked starts")
-        val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
-        removeEditFragment(fragment)
+        removeEditFragment(findFragmentById(R.id.task_details_container))
     }
 
     //
@@ -79,12 +81,21 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
          when (item.itemId) {
+             R.id.menumain_aboutApp -> showAboutDialog()
             R.id.menumain_addTask -> taskEdiRequest(null)
 //            R.id.menumain_setting -> true
              android.R.id.home -> {
                  Log.d(TAG,"home button is clicked ")
-                 val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
-                 removeEditFragment(fragment)
+                 val fragment = findFragmentById(R.id.task_details_container)
+//                 removeEditFragment(fragment)
+                 if ((fragment is AddEditFragment) && fragment.isDirty()){
+                     showConfirmationDialog(DIALOG_ID_CANCEL,
+                         getString(R.string.cancel_diegg_message),
+                         R.string.Dialog_id_del_show,
+                         R.string.Dialog_id_del_negative_show)
+                 } else {
+                     removeEditFragment(fragment)
+                 }
              }
         }
         return super.onOptionsItemSelected(item)
@@ -93,13 +104,31 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
     override fun onBackPressed() {
         Log.d(TAG,"onBackPressed starts")
 
-        val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
+        val fragment = findFragmentById(R.id.task_details_container)
         if(fragment == null || mTwoPane){
             super.onBackPressed()
         }else{
-            removeEditFragment(fragment)
+            if ((fragment is AddEditFragment) && fragment.isDirty()){
+                showConfirmationDialog(DIALOG_ID_CANCEL,
+                    getString(R.string.cancel_diegg_message),
+                    R.string.Dialog_id_del_show,
+                    R.string.Dialog_id_del_negative_show)
+            } else {
+                removeEditFragment(fragment)
+            }
         }
     }
+
+    override fun setOnPositiveRid(dialogId: Int, args: Bundle) {
+        Log.d(TAG,"setOnPositiveRid called")
+        if(dialogId == DIALOG_ID_CANCEL){
+            val fragment = findFragmentById(R.id.task_details_container)
+            removeEditFragment(fragment)
+        }
+
+    }
+
+
 
     override fun editTaskButton(task: Task) {
         Log.d(TAG,"editTaskButton clicked")
@@ -109,10 +138,33 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
 
     private fun taskEdiRequest(task:Task?){
-        val newInstance = AddEditFragment.newInstance(task)
-        supportFragmentManager.beginTransaction().replace(R.id.task_details_container,newInstance).commit()
+//        val newInstance = AddEditFragment.newInstance(task)
+//        supportFragmentManager.beginTransaction().replace(R.id.task_details_container,newInstance).commit()
 
+        replaceFragment(AddEditFragment.newInstance(task),R.id.task_details_container)
         showFragment()
+    }
+
+    // show about dialog in function
+    private fun showAboutDialog(){
+        val massageView = layoutInflater.inflate(R.layout.about,null,false)
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.app_name)
+        builder.setIcon(R.drawable.ic_launcher_foreground)
+
+        builder.setPositiveButton(R.string.ok){dialog,which ->
+            if(aboutDialog != null && aboutDialog?.isShowing == true) run {
+                aboutDialog?.dismiss()
+            }
+        }
+        aboutDialog = builder.setView(massageView).create()
+        aboutDialog?.setCanceledOnTouchOutside(true)
+
+        val aboutVersion = massageView.findViewById(R.id.about_version) as TextView
+        aboutVersion.text = BuildConfig.VERSION_NAME
+        aboutDialog?.show()
+
     }
 
     // Login mainActivity lifecycle
@@ -144,6 +196,9 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
     override fun onStop() {
         Log.d(TAG, "onStop: called")
         super.onStop()
+        if(aboutDialog?.isShowing == true){
+            aboutDialog?.dismiss()
+        }
     }
 
     override fun onDestroy() {

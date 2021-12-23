@@ -30,4 +30,13 @@
     <string name="fristTimeDescription">Hello bro add a new task And enjoy quality work</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
+    <string name="delete_dialog">Delete</string>
+    <string name="dialog_message_delete">Deleting will also timing data and associate task ID: %1$d %2$s</string>
+    <string name="Dialog_id_del_show">Abandon Changes</string>
+    <string name="Dialog_id_del_negative_show">counting Editing</string>
+    <string name="cancel_diegg_message">You have unsaved changed Do you want to abandon changed counting editing?</string>
+    <string name="copyrightAbout">Copyright © 2021 iamzen.in</string>
+    <string name="emailAbout">Support for email TimeWork@iamzen.in</string>
+    <string name="webLink">Instructions available in iamzen.in</string>
+    <string name="aboutCredits"><b>icon drive from clock image by publicDomainVector.org</b> <b>anonymous</b></string>
 </resources>

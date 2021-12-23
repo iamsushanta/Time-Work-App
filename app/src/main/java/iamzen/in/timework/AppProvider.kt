@@ -177,7 +177,7 @@ class AppProvider : ContentProvider(){
                 }
 
 
-                count = db.delete(TaskContract.TABLE_NAME,selection,selectionArgs)
+                count = db.delete(TaskContract.TABLE_NAME,selectionCriteria,selectionArgs)
 
             }
             TIMING -> {

@@ -69,9 +69,11 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
     }
 
     fun saveTask(task:Task):Task{
+        Log.d(TAG,"saveTask called viewModel")
         val value = ContentValues()
 
         if(task.Name.isNotEmpty()) {
+            Log.d(TAG,"task name is not empty")
             value.put(TaskContract.Collum.TASK_NAME, task.Name)
             value.put(TaskContract.Collum.TASK_DESCRIPTION, task.Description)
             value.put(TaskContract.Collum.TASK_SHORT_ORDER, task.ShortOrder)
@@ -88,11 +90,11 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
                         Log.d(TAG, "saving new task id ${task.id}")
                     }
                 }
-            }
-        } else{
-            GlobalScope.launch {
-                Log.d(TAG,"updating task ")
-                getApplication<Application>().contentResolver.update(TaskContract.buildUriFromId(task.id),value,null,null)
+            } else{
+                GlobalScope.launch {
+                    Log.d(TAG,"updating task ")
+                    getApplication<Application>().contentResolver.update(TaskContract.buildUriFromId(task.id),value,null,null)
+                }
             }
         }
 

@@ -57,10 +57,10 @@ class AddEditFragment : Fragment() {
                 Log.d(TAG,"existing view modified create task is ${task.id}")
                 addEditName.setText(task.Name)
                 addEditDescription.setText(task.Description)
-                addEditShortOrder.setText(task.ShortOrder.toString())
-            } else{
-                Log.d(TAG,"no argument have new item add")
+                addEditShortOrder.setText(task.ShortOrder?.toString())
 
+            }else{
+                Log.d(TAG,"no argument pass")
             }
         }
     }
@@ -79,12 +79,21 @@ class AddEditFragment : Fragment() {
     }
 
 
+    fun isDirty():Boolean{
+        val newTask = taskFromUri()
+        return ((newTask != task) &&
+                (newTask.Name.isNotBlank()
+                        || newTask.Description?.isNotBlank() == true
+                        || newTask.ShortOrder != 0)
+                )
+    }
     // add a new task in a databases Or Exiting task will be modified
 
     private fun saveTask(){
+        Log.d(TAG,"save task called ")
         val newTask = taskFromUri()
-        if (newTask != task){
-            viewModel.saveTask(newTask)
+        if(newTask != task){
+            task = viewModel.saveTask(newTask)
         }
     }
 
