@@ -1,12 +1,16 @@
 package iamzen.`in`.timework
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -83,7 +87,11 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
          when (item.itemId) {
              R.id.menumain_aboutApp -> showAboutDialog()
             R.id.menumain_addTask -> taskEdiRequest(null)
-//            R.id.menumain_setting -> true
+            R.id.menumain_setting -> {
+                val settingDialog = SettingDialog()
+                settingDialog.show(supportFragmentManager,null)
+
+            }
              android.R.id.home -> {
                  Log.d(TAG,"home button is clicked ")
                  val fragment = findFragmentById(R.id.task_details_container)
@@ -163,6 +171,18 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
         val aboutVersion = massageView.findViewById(R.id.about_version) as TextView
         aboutVersion.text = BuildConfig.VERSION_NAME
+        val about_url:TextView? = massageView.findViewById(R.id.about_url)
+        about_url?.setOnClickListener {v ->
+            val intent = Intent(Intent.ACTION_VIEW)
+            val s = (v as TextView).text.toString()
+            intent.data = Uri.parse(s)
+            try {
+                startActivity(intent)
+            } catch(e: ActivityNotFoundException){
+                Toast.makeText(this@MainActivity,R.string.webLinkClickError,Toast.LENGTH_LONG).show()
+
+            }
+        }
         aboutDialog?.show()
 
     }

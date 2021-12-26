@@ -3,13 +3,20 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.18854166666666666" />
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.18854166666666666" />
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout-v21/about_url.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout-v21/about_web_url.xml" value="0.1828125" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/about.xml" value="0.264" />
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/about_url.xml" value="0.2" />
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/about_web_url.xml" value="0.1828125" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/activity_main.xml" value="0.2234375" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/contein_main.xml" value="0.2234375" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/deleteme.xml" value="0.24230072463768115" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/fragment_add_edit.xml" value="0.264" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/fragment_main_acitivity_frag_ment.xml" value="0.2234375" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/list_of_item.xml" value="0.2234375" />
+        <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/layout/setting_about.xml" value="0.12" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/menu/menu_main.xml" value="0.536" />
         <entry key="..\:/Users/ZEN/AndroidStudioProjects/TimeWork/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.14791666666666667" />
       </map>

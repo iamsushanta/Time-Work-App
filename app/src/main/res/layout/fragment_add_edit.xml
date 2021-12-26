@@ -53,7 +53,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:drawableStart="@android:drawable/ic_menu_save"
         android:text="@string/SubmitButton"
         app:backgroundTint="#130F0F"
         app:icon="@android:drawable/ic_menu_save" />

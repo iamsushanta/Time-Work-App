@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/about_web_url"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:autoLink="web"
+    android:text="@string/webLink_v21"
+    android:textColor="#3F51B5"
+    android:textColorLink="@color/web_link"
+    android:textSize="20sp"
+    android:textStyle="bold">
+
+</TextView>
