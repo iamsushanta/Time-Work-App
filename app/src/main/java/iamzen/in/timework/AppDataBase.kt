@@ -37,20 +37,80 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
 
         db.execSQL(sSql)
 
-
+        addTimingTable(db)
+        addCurrentTimingView(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         Log.d(TAG,"OnUpgrade start")
         when(oldVersion){
             1 -> {
-                // some code hare
-                Log.d(TAG,"Some Code hare")
-            } else -> {
+                 addTimingTable(db)
+                addCurrentTimingView(db)
+
+            }
+            2 -> {
+                addCurrentTimingView(db)
+            }
+            else -> {
                 Log.d(TAG,"Exception Unknown newVersion $newVersion")
             }
         }
     }
+
+    private fun addTimingTable(db: SQLiteDatabase){
+        // create table TimingTable
+        val sqlTiming = """CREATE TABLE ${TimingContract.TABLE_NAME}(
+            ${TimingContract.Collum.ID} INTEGER PRIMARY KEY NOT NULL,
+            ${TimingContract.Collum.TIMING_TASK_ID} INTEGER NOT NULL,
+            ${TimingContract.Collum.TIMING_START_TIME} INTEGER,
+            ${TimingContract.Collum.TIMING_TASK_DURATION} INTEGER);""".replaceIndent(" ")
+
+        Log.d(TAG,"sqlTiming is $sqlTiming")
+        db.execSQL(sqlTiming)
+
+        val removeSql = """CREATE TRIGGER remove_task
+            AFTER DELETE ON ${TaskContract.TABLE_NAME}
+            FOR EACH ROW 
+            BEGIN
+            DELETE FROM ${TimingContract.TABLE_NAME}
+            WHERE ${TimingContract.Collum.TIMING_TASK_ID} = OLD.${TaskContract.Collum.TASK_ID};
+            END;
+        """.trimMargin()
+
+        Log.d(TAG,"removeSql is $removeSql")
+        db.execSQL(removeSql)
+    }
+
+    private fun addCurrentTimingView(db: SQLiteDatabase) {
+        /*
+        CREATE VIEW vwCurrentTiming
+             AS SELECT Timings._id,
+                 Timings.TaskId,
+                 Timings.StartTime,
+                 Tasks.Name
+             FROM Timings
+             JOIN Tasks
+             ON Timings.TaskId = Tasks._id
+             WHERE Timings.Duration = 0
+             ORDER BY Timings.StartTime DESC;
+         */
+        val sSQLTimingView = """CREATE VIEW ${CurrentTimingContract.TABLE_NAME}
+        AS SELECT ${TimingContract.TABLE_NAME}.${TimingContract.Collum.ID},
+            ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_ID},
+            ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_START_TIME},
+            ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_NAME}
+        FROM ${TimingContract.TABLE_NAME}
+        JOIN ${TaskContract.TABLE_NAME}
+        ON ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_ID} = ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_ID}
+        WHERE ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_DURATION} = 0
+        ORDER BY ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_START_TIME} DESC;
+    """.replaceIndent(" ")
+        Log.d(TAG, sSQLTimingView)
+        db.execSQL(sSQLTimingView)
+    }
+
+
 
     // This code SingletonHolder Class call easy way for understand
     companion object : SingletonHolder<AppDataBase,Context> (::AppDataBase)

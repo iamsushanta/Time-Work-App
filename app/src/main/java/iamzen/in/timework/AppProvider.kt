@@ -16,6 +16,7 @@ private const val TASK = 100
 private const val TASK_ID = 101
 private const val TIMING = 200
 private const val TIMING_ID = 201
+private const val CURRENT_TIMING = 300
 private const val DURATION = 400
 private const val DURATION_ID = 401
 val CONTENT_URI_AUTHORITY: Uri = Uri.parse("content://${CONTENT_AUTHORITY}")
@@ -35,7 +36,7 @@ class AppProvider : ContentProvider(){
         // Timing Contract add uri
         matcher.addURI(CONTENT_AUTHORITY,TimingContract.TABLE_NAME, TIMING)
         matcher.addURI(CONTENT_AUTHORITY,"${TimingContract.TABLE_NAME}/#", TIMING_ID)
-
+        matcher.addURI(CONTENT_AUTHORITY,CurrentTimingContract.TABLE_NAME, CURRENT_TIMING)
         return matcher
 
     }
@@ -73,6 +74,10 @@ class AppProvider : ContentProvider(){
                 queryBuilder.appendWhereEscapeString("$taskId")
             }
 
+            CURRENT_TIMING -> {
+                queryBuilder.tables = CurrentTimingContract.TABLE_NAME
+            }
+
 //            DURATION -> queryBuilder.tables = DurationContract.TABLE_NAME
 //            DURATION_ID-> {
 //                queryBuilder.tables = DurationContract.TABLE_NAME
@@ -102,6 +107,7 @@ class AppProvider : ContentProvider(){
             TASK_ID -> TaskContract.CONTENT_ITEM_TYPE
             TIMING -> TimingContract.CONTENT_TYPE
             TIMING_ID -> TimingContract.CONTENT_ITEM_TYPE
+            CURRENT_TIMING -> CurrentTimingContract.CONTENT_ITEM_TYPE
 //            TASK -> DurationContract.CONTENT_TYPE
 //            TASK_ID -> DurationContract.CONTENT_ITEM_TYPE
 //
@@ -239,7 +245,7 @@ class AppProvider : ContentProvider(){
                 if(selection != null && selection.isNotEmpty()){
                     selectionCriteria += "AND $selection"
                 } 
-                count = db.update(TaskContract.TABLE_NAME,values,selection,selectionArgs)
+                count = db.update(TaskContract.TABLE_NAME,values,selectionCriteria,selectionArgs)
                 
             }
             TIMING -> {

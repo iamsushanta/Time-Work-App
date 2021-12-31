@@ -15,7 +15,7 @@
     <string name="menuMainDuration">duration</string>
     <string name="menuMainAbout">about</string>
     <string name="menuMainGenarate">genrate</string>
-    <string name="MainTitle">Add Your Task</string>
+    <string name="MainTitle">No Task Timing Begin </string>
     <string name="TitleOfTask"> Android App Development Task</string>
     <string name="DescriptionOfTask">Android App Development with kotlin</string>
     <string name="Task_Delete">Delete Button</string>
@@ -42,4 +42,5 @@
     <string name="webUrl"><u>"https://zen.blog"</u></string>
     <string name="webLinkClickError">Don\'t Browser found application. cannot not visit world wide web </string>
     <string name="aboutCredits"><b>icon drive from clock image by publicDomainVector.org</b> <b>anonymous</b></string>
+    <string name="TimingRecordShow">Start Timing %1$s</string>
 </resources>

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_main_acitivity_frag_ment.*
@@ -30,13 +31,23 @@ class MainActivityFragMeant : Fragment(),
     AppDialog.DialogEvents{
 
 
-    private val viewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
+    private val mViewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
     private val mAdapter = CursorRecyclerViewAdapter(null,this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"onCreated starts")
-        viewModel.cursor.observe(this, { cursor -> mAdapter.swapCursor(cursor)?.close()})
+        mViewModel.cursor.observe(this, { cursor -> mAdapter.swapCursor(cursor)?.close()})
+        mViewModel.timing.observe(this, Observer<String>{
+
+                timings -> DisplayTitle.text = if (timings != null){
+                    Log.d(TAG,"Timings starts is called")
+                    getString(R.string.TimingRecordShow,timings)
+        } else{
+            Log.d(TAG,"Timing is not starts ")
+            getString(R.string.MainTitle)
+        }
+        })
     }
 
     override fun onCreateView(
@@ -137,6 +148,7 @@ class MainActivityFragMeant : Fragment(),
 
     override fun longClick(task: Task) {
         Log.d(TAG,"longClick called")
+        mViewModel.timingTask(task)
     }
 
     interface ManageWorkingButton{
@@ -150,7 +162,7 @@ class MainActivityFragMeant : Fragment(),
         if (dialogId == DIALOG_ID_DELETED){
             val taskId = args.getLong(DIALOG_TASK_ID)
             if(BuildConfig.DEBUG && taskId == 0L) throw AssertionError("task id is 0")
-            viewModel.deleteTask(taskId)
+            mViewModel.deleteTask(taskId)
         }
     }
 

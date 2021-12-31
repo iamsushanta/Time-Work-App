@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.contein_main.*
+import kotlinx.android.synthetic.main.fragment_main_acitivity_frag_ment.*
 
 private const val TAG = "MainActivity"
 const val DIALOG_ID_CANCEL = 1
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
     private var mTwoPane = false
 
     private var aboutDialog: AlertDialog? = null
+//    private val mViewModel:TimeWorkViewModel by lazy { ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,7 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
+
 
         mTwoPane = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Log.d(TAG,"mTwoPane is $mTwoPane")
@@ -43,6 +47,17 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
             task_details_container.visibility = if(mTwoPane) View.INVISIBLE else View.GONE
             mainFragment.visibility = View.VISIBLE
         }
+//        mViewModel.timing.observe(this, Observer<String>{ timings ->
+//            Log.d(TAG,"viewModel timing tab a timing")
+//            DisplayTitle.text = if (timings != null){
+//                    Log.d(TAG,"Timings starts is called")
+//                    getString(R.string.TimingRecordShow,timings)
+//        } else{
+//            Log.d(TAG,"Timing is not starts ")
+//            getString(R.string.MainTitle)
+//        }
+//        })
+
     }
 
 
@@ -171,8 +186,8 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
         val aboutVersion = massageView.findViewById(R.id.about_version) as TextView
         aboutVersion.text = BuildConfig.VERSION_NAME
-        val about_url:TextView? = massageView.findViewById(R.id.about_url)
-        about_url?.setOnClickListener {v ->
+        val aboutUrl:TextView? = massageView.findViewById(R.id.about_url)
+        aboutUrl?.setOnClickListener { v ->
             val intent = Intent(Intent.ACTION_VIEW)
             val s = (v as TextView).text.toString()
             intent.data = Uri.parse(s)
@@ -201,6 +216,7 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
     override fun onResume() {
         Log.d(TAG, "onResume: called")
         super.onResume()
+
     }
 
     override fun onPause() {
