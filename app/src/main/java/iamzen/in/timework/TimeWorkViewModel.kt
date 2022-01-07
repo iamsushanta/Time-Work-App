@@ -18,19 +18,23 @@ import kotlinx.coroutines.launch
 private const val TAG = "TimeWorkViewModel"
 class TimeWorkViewModel(application: Application): AndroidViewModel(application) {
 
-    private var currentTime:Timing? = null
+
     private val contentObserver = object : ContentObserver(Handler()){
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             Log.d(TAG,"On change starts ")
             loadTask()
         }
     }
+
+    private var currentTime:Timing? = null
+
     private val databaseCursor = MutableLiveData<Cursor>()
     val cursor: LiveData<Cursor>
         get() = databaseCursor
-    private val timingTask = MutableLiveData<String>()
+
+    private val taskTiming = MutableLiveData<String>()
     val timing : LiveData<String>
-        get() = timingTask
+        get() = taskTiming
 
     init {
         Log.d(TAG,"TimeWorkViewModel initialize")
@@ -38,9 +42,10 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
             TaskContract.CONTENT_URI,
             true,
             contentObserver)
-        retrieveTiming()
+         currentTime = retrieveTiming()
         loadTask()
     }
+
 
 
 
@@ -55,7 +60,7 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
             GlobalScope.launch{
             val shortOrder =
                 "${TaskContract.Collum.TASK_SHORT_ORDER}, ${TaskContract.Collum.TASK_NAME}"
-            val cursor = getApplication<Application>().contentResolver.query(
+            val cursor = getApplication<Application>().contentResolver?.query(
                 TaskContract.CONTENT_URI,
                 projection, null, null, shortOrder
             )
@@ -72,7 +77,7 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
         Log.d(TAG,"retrieve Timing Start...")
         val timing:Timing?
 
-        val timingCursor:Cursor? = getApplication<Application>().contentResolver.query(
+        val timingCursor:Cursor? = getApplication<Application>().contentResolver?.query(
             CurrentTimingContract.CONTENT_URI,
             null,
             null,
@@ -80,13 +85,15 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
             null
         )
 
-        if(timingCursor != null && timingCursor.moveToNext()){
+        if(timingCursor != null && timingCursor.moveToFirst()){
             val taskId = timingCursor.getLong(timingCursor.getColumnIndex(CurrentTimingContract.Collum.TASK_ID))
             val timingId = timingCursor.getLong(timingCursor.getColumnIndex(CurrentTimingContract.Collum.TIMING_ID))
             val startTime = timingCursor. getLong(timingCursor.getColumnIndex(CurrentTimingContract.Collum.TIMING_START_TIME))
             val name = timingCursor.getString(timingCursor.getColumnIndex(CurrentTimingContract.Collum.TASK_NAME))
             timing = Timing(taskId,startTime,timingId)
-            timingTask.value = name
+
+            taskTiming.value = name
+
         }else{
             timing = null
 
@@ -128,7 +135,7 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
             }
 
         }
-        timingTask.value = if(currentTime != null) task.Name else null
+        taskTiming.value = if(currentTime != null) task.Name else null
     }
 
     fun saveTiming(currentTiming:Timing){

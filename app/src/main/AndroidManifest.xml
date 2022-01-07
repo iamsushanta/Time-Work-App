@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="iamzen.in.timework">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,6 +13,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TimeWork"
         tools:ignore="AllowBackup">
+        <activity
+            android:name=".DurationsReport"
+            android:exported="false"
+            android:label="@string/title_activity_durations"
+            android:theme="@style/Theme.TimeWork.NoActionBar"
+            android:parentActivityName=".MainActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="iamzen.in.timework.MainActivity" />
+        </activity>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,10 +35,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
+            android:name=".AppProvider"
             android:authorities="${applicationId}.provider"
-            android:name="iamzen.in.timework.AppProvider"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

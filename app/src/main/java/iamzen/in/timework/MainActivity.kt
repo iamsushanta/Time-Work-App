@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import iamzen.`in`.timework.debug.TestData
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.contein_main.*
 import kotlinx.android.synthetic.main.fragment_main_acitivity_frag_ment.*
@@ -26,7 +27,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
     private var mTwoPane = false
 
     private var aboutDialog: AlertDialog? = null
-//    private val mViewModel:TimeWorkViewModel by lazy { ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,16 +47,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
             task_details_container.visibility = if(mTwoPane) View.INVISIBLE else View.GONE
             mainFragment.visibility = View.VISIBLE
         }
-//        mViewModel.timing.observe(this, Observer<String>{ timings ->
-//            Log.d(TAG,"viewModel timing tab a timing")
-//            DisplayTitle.text = if (timings != null){
-//                    Log.d(TAG,"Timings starts is called")
-//                    getString(R.string.TimingRecordShow,timings)
-//        } else{
-//            Log.d(TAG,"Timing is not starts ")
-//            getString(R.string.MainTitle)
-//        }
-//        })
 
     }
 
@@ -86,12 +76,15 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         removeEditFragment(findFragmentById(R.id.task_details_container))
     }
 
-    //
     
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+        if(BuildConfig.DEBUG){
+            val generate = menu.findItem(R.id.menumain_ganerate)
+            generate.isVisible = true
+        }
         return true
     }
 
@@ -102,6 +95,8 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
          when (item.itemId) {
              R.id.menumain_aboutApp -> showAboutDialog()
             R.id.menumain_addTask -> taskEdiRequest(null)
+             R.id.menumain_duration -> startActivity(Intent(this,DurationsReport::class.java))
+             R.id.menumain_ganerate -> TestData.generateTestData(contentResolver)
             R.id.menumain_setting -> {
                 val settingDialog = SettingDialog()
                 settingDialog.show(supportFragmentManager,null)

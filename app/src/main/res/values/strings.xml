@@ -43,4 +43,10 @@
     <string name="webLinkClickError">Don\'t Browser found application. cannot not visit world wide web </string>
     <string name="aboutCredits"><b>icon drive from clock image by publicDomainVector.org</b> <b>anonymous</b></string>
     <string name="TimingRecordShow">Start Timing %1$s</string>
+    <string name="details_task_name">Task Name</string>
+    <string name="details_date">Date</string>
+    <string name="details_duration">Duration</string>
+    <string name="details_description">Description</string>
+    <string name="title_activity_duration">DurationActivity</string>
+    <string name="title_activity_durations">DurationsActivity</string>
 </resources>

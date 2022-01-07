@@ -54,6 +54,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:text="@string/SubmitButton"
+        android:textColor="@color/teal_200"
         app:backgroundTint="#130F0F"
         app:icon="@android:drawable/ic_menu_save" />
 </LinearLayout>

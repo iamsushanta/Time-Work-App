@@ -17,8 +17,8 @@ private const val TASK_ID = 101
 private const val TIMING = 200
 private const val TIMING_ID = 201
 private const val CURRENT_TIMING = 300
-private const val DURATION = 400
-private const val DURATION_ID = 401
+private const val TASK_DURATION = 400
+
 val CONTENT_URI_AUTHORITY: Uri = Uri.parse("content://${CONTENT_AUTHORITY}")
 class AppProvider : ContentProvider(){
 
@@ -37,6 +37,9 @@ class AppProvider : ContentProvider(){
         matcher.addURI(CONTENT_AUTHORITY,TimingContract.TABLE_NAME, TIMING)
         matcher.addURI(CONTENT_AUTHORITY,"${TimingContract.TABLE_NAME}/#", TIMING_ID)
         matcher.addURI(CONTENT_AUTHORITY,CurrentTimingContract.TABLE_NAME, CURRENT_TIMING)
+
+        // Duration Contract add uri
+        matcher.addURI(CONTENT_AUTHORITY,DurationsContract.TABLE_NAME, TASK_DURATION)
         return matcher
 
     }
@@ -52,9 +55,9 @@ class AppProvider : ContentProvider(){
         selection: String?,
         selectionArgs: Array<out String>?,
         sortOrder: String?
-    ): Cursor? {
+    ): Cursor {
 
-        Log.d(TAG,"query starts")
+        Log.d(TAG,"query start with $uri")
         val queryMatch = uriMatcher.match(uri)
         val queryBuilder = SQLiteQueryBuilder()
         Log.d(TAG,"query Match $queryMatch")
@@ -78,22 +81,20 @@ class AppProvider : ContentProvider(){
                 queryBuilder.tables = CurrentTimingContract.TABLE_NAME
             }
 
-//            DURATION -> queryBuilder.tables = DurationContract.TABLE_NAME
-//            DURATION_ID-> {
-//                queryBuilder.tables = DurationContract.TABLE_NAME
-//                val taskId = DurationContract.getId(uri)
-//                queryBuilder.appendWhere("${DurationContract.Collum.TASK_ID} = ")
-//                queryBuilder.appendWhereEscapeString("$taskId")
-//            }
+            TASK_DURATION -> {
+                queryBuilder.tables = DurationsContract.TABLE_NAME
+            }
+
 
             else -> throw IllegalArgumentException("Unknown uri $uri")
 
         }
-        val context = context ?: throw NullPointerException("In insert function.  Context can't be null here!")
+        val context = context!! //?: throw NullPointerException("In insert function.  Context can't be null here!")
 
-        val appDatabase = AppDataBase.getInstance(context).readableDatabase
-        val cursor = queryBuilder.query(appDatabase,projection,selection,selectionArgs,null,null,sortOrder)
-        Log.d(TAG,"query End ${cursor.count}")
+        val db = AppDataBase.getInstance(context).readableDatabase
+        Log.d(TAG,"db is  $db projection is $projection  selection is $selection selectionArgs is $selectionArgs sortOrder is $sortOrder")
+        val cursor = queryBuilder.query(db, projection, selection, selectionArgs,null,null,sortOrder)
+        Log.d(TAG,"returning count is: ${cursor.count} cursor is $cursor")
 
 
          return cursor
@@ -105,12 +106,14 @@ class AppProvider : ContentProvider(){
         return when (uriMatcher.match(uri)){
             TASK -> TaskContract.CONTENT_TYPE
             TASK_ID -> TaskContract.CONTENT_ITEM_TYPE
+
             TIMING -> TimingContract.CONTENT_TYPE
             TIMING_ID -> TimingContract.CONTENT_ITEM_TYPE
+
             CURRENT_TIMING -> CurrentTimingContract.CONTENT_ITEM_TYPE
-//            TASK -> DurationContract.CONTENT_TYPE
-//            TASK_ID -> DurationContract.CONTENT_ITEM_TYPE
-//
+
+            TASK_DURATION -> DurationsContract.CONTENT_TYPE
+
             else -> throw IllegalArgumentException("uri not Match ")
         }
     }

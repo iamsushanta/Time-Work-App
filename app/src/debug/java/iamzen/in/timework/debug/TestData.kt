@@ -71,7 +71,7 @@ object TestData {
     }
 
     private fun saveCurrentTiming(contentResolver: ContentResolver,currentTime:TaskTiming){
-        var values = ContentValues()
+        val values = ContentValues()
          values.put(TimingContract.Collum.TIMING_TASK_ID,currentTime.taskId)
         values.put(TimingContract.Collum.TIMING_START_TIME, currentTime.startTime)
         values.put(TimingContract.Collum.TIMING_TASK_DURATION,currentTime.duration)

@@ -12,7 +12,7 @@ import android.util.Log
 
 private const val TAG = "AppDataBase"
 const val DATABASE_NAME = "TimeWork.db"
-const val DATABASE_VERSION = 3
+const val DATABASE_VERSION = 4
 
 internal class AppDataBase private constructor(context: Context) : SQLiteOpenHelper(
     context, DATABASE_NAME,
@@ -39,6 +39,7 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
 
         addTimingTable(db)
         addCurrentTimingView(db)
+        addDuration(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -47,11 +48,14 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
             1 -> {
                  addTimingTable(db)
                 addCurrentTimingView(db)
+                addDuration(db)
 
             }
             2 -> {
                 addCurrentTimingView(db)
+                addDuration(db)
             }
+            3 -> addDuration(db)
             else -> {
                 Log.d(TAG,"Exception Unknown newVersion $newVersion")
             }
@@ -109,6 +113,42 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         Log.d(TAG, sSQLTimingView)
         db.execSQL(sSQLTimingView)
     }
+
+    private fun addDuration(db: SQLiteDatabase){
+
+        /*
+      CREATE VIEW vwTaskDurations AS
+      SELECT Tasks.Name,
+      Tasks.Description,
+      Timings.StartTime,
+      DATE(Timings.StartTime, 'unixepoch', 'localtime') AS StartDate,
+      SUM(Timings.Duration) AS Duration
+      FROM Tasks INNER JOIN Timings
+      ON Tasks._id = Timings.TaskId
+      GROUP BY Tasks._id, StartDate;
+      */
+
+        val sSQLDurationView = """ CREATE VIEW  ${DurationsContract.TABLE_NAME}
+            AS SELECT ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_NAME},
+            ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_DESCRIPTION},
+            ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_START_TIME},
+            DATE (${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_START_TIME},'unixepoch','localtime')
+            AS ${DurationsContract.Collum.START_DATE},
+            SUM(${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_DURATION})
+            AS ${DurationsContract.Collum.DURATION}
+            FROM ${TaskContract.TABLE_NAME} INNER JOIN ${TimingContract.TABLE_NAME}
+            ON ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_ID}=
+            ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_ID}
+            GROUP BY ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_ID},
+            ${DurationsContract.Collum.START_DATE}
+             ;""".replaceIndent(" ")
+
+        
+        Log.d(TAG, sSQLDurationView)
+
+        db.execSQL(sSQLDurationView)
+    }
+
 
 
 
