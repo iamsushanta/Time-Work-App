@@ -4,11 +4,10 @@
     tools:context="iamzen.in.timework.MainActivity">
     <item
         android:id="@+id/menumain_addTask"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_baseline_add_box_24"
         android:orderInCategory="10"
         android:title="@string/menuAddButton"
-        app:showAsAction="ifRoom"
-         />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menumain_duration"
         android:icon="@android:drawable/ic_menu_view"

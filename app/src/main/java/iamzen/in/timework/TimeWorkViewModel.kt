@@ -3,6 +3,8 @@ package iamzen.`in`.timework
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentValues
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
@@ -11,6 +13,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -19,10 +22,24 @@ private const val TAG = "TimeWorkViewModel"
 class TimeWorkViewModel(application: Application): AndroidViewModel(application) {
 
 
+    @DelicateCoroutinesApi
     private val contentObserver = object : ContentObserver(Handler()){
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             Log.d(TAG,"On change starts ")
             loadTask()
+        }
+    }
+
+
+    private val setting = application.getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE)
+    private var ignoreLessThan = setting.getInt(SETTING_IGNORE_LESSTHAN, SETTING_DEFAULT_LESSTHAN_VALUE)
+
+    private val settingListener = SharedPreferences.OnSharedPreferenceChangeListener{ sharedPreferences, key ->
+        when (key){
+            SETTING_IGNORE_LESSTHAN -> {
+                 ignoreLessThan = sharedPreferences.getInt(key , SETTING_DEFAULT_LESSTHAN_VALUE)
+                Log.d(TAG,"settingIgnoreLess now than is : $ignoreLessThan")
+            }
         }
     }
 
@@ -42,13 +59,15 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
             TaskContract.CONTENT_URI,
             true,
             contentObserver)
-         currentTime = retrieveTiming()
+        setting.registerOnSharedPreferenceChangeListener(settingListener)
+        currentTime = retrieveTiming()
         loadTask()
     }
 
 
 
 
+        @DelicateCoroutinesApi
         private fun loadTask() {
             val projection = arrayOf(
                 TaskContract.Collum.TASK_ID,
@@ -60,9 +79,10 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
             GlobalScope.launch{
             val shortOrder =
                 "${TaskContract.Collum.TASK_SHORT_ORDER}, ${TaskContract.Collum.TASK_NAME}"
-            val cursor = getApplication<Application>().contentResolver?.query(
+            val cursor = getApplication<Application>().contentResolver.query(
                 TaskContract.CONTENT_URI,
-                projection, null, null, shortOrder
+                projection, null, null,
+                shortOrder
             )
             Log.d(TAG, cursor.toString())
 
@@ -110,6 +130,7 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
+    @DelicateCoroutinesApi
     fun timingTask(task:Task){
         Log.d(TAG,"timingTask called")
         val timingRecord = currentTime
@@ -138,7 +159,8 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
         taskTiming.value = if(currentTime != null) task.Name else null
     }
 
-    fun saveTiming(currentTiming:Timing){
+    @DelicateCoroutinesApi
+    private fun saveTiming(currentTiming:Timing){
         Log.d(TAG,"saveTiming called")
 
         // Are you update or inserting a new row
@@ -159,8 +181,15 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
                    currentTiming.id = TimingContract.getId(uri)
                }
            } else{
-               getApplication<Application>().contentResolver.update(
-                   TimingContract.buildUriFromId(currentTiming.id),values,null,null)
+               if(currentTiming.duration >= ignoreLessThan){
+                   Log.d(TAG,"saving timing ignore lessThan $ignoreLessThan current timing duration is : ${currentTiming.duration}")
+                   getApplication<Application>().contentResolver.update(
+                       TimingContract.buildUriFromId(currentTiming.id),values,null,null)
+               } else{
+                   Log.d(TAG,"not saveTiming deleted because your time ${currentTiming.duration}is lessThan $ignoreLessThan")
+                   getApplication<Application>().contentResolver.delete(TimingContract.buildUriFromId(currentTiming.id),null,null)
+               }
+
            }
        }
     }
@@ -201,5 +230,6 @@ class TimeWorkViewModel(application: Application): AndroidViewModel(application)
     override fun onCleared() {
         Log.d(TAG,"OnCleared called")
         getApplication<Application>().contentResolver.unregisterContentObserver(contentObserver)
+        setting.unregisterOnSharedPreferenceChangeListener(settingListener)
     }
 }

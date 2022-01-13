@@ -49,4 +49,11 @@
     <string name="details_description">Description</string>
     <string name="title_activity_duration">DurationActivity</string>
     <string name="title_activity_durations">DurationsActivity</string>
+    <string name="rm_filter_week">show week</string>
+    <string name="rm_title_data_range">date show</string>
+    <string name="rm_title_delete">Delete old timing</string>
+    <string name="rm_filter_day">filter one day</string>
+    <string name="date_title_filter">Date Filter</string>
+    <string name="optionDeleteSelecte">Date is deleted</string>
+    <string name="deleteSureTitle">"If you sure you deleted timing record %1$s"</string>
 </resources>

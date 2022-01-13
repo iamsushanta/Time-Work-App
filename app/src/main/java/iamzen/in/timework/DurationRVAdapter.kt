@@ -23,6 +23,7 @@ class DurationRVAdapter(context: Context,private var cursor: Cursor?):RecyclerVi
     private val dateFormat = DateFormat.getDateFormat(context)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DurationViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.task_durations,parent,false)
+
         return DurationViewHolder(view)
 
     }
@@ -89,4 +90,8 @@ class DurationRVAdapter(context: Context,private var cursor: Cursor?):RecyclerVi
         }
         return oldCursor
     }
+
+
+
 }
+

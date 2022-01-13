@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.TimeWork" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimaryVariant">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/teal_200</item>
         <item name="android:textColorTertiary">#7C228C</item>
         <item name="colorOnPrimarySurface">@color/black</item>
 

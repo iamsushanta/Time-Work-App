@@ -202,7 +202,7 @@ class AppProvider : ContentProvider(){
                 if(selection != null && selection.isNotEmpty()){
                     selectionCriteria += "AND $selection"
                 }
-                count = db.delete(TimingContract.TABLE_NAME,selection,selectionArgs)
+                count = db.delete(TimingContract.TABLE_NAME,selectionCriteria,selectionArgs)
 
             }
             else -> throw IllegalArgumentException("unknown uri $uri")
