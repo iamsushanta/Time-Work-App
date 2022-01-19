@@ -18,9 +18,12 @@ import iamzen.`in`.timework.debug.TestData
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.contein_main.*
 import kotlinx.android.synthetic.main.fragment_main_acitivity_frag_ment.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 private const val TAG = "MainActivity"
 const val DIALOG_ID_CANCEL = 1
+
+@DelicateCoroutinesApi
 class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActivityFragMeant.ManageWorkingButton,
          AppDialog.DialogEvents{
 
@@ -62,7 +65,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         Log.d(TAG,"removeEditFragment starts")
         if(fragment != null){
             Log.d(TAG,"fragment not a null")
-//            supportFragmentManager.beginTransaction().remove(fragment)
             removeFragment(fragment)
         }
 
@@ -88,6 +90,7 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -105,7 +108,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
              android.R.id.home -> {
                  Log.d(TAG,"home button is clicked ")
                  val fragment = findFragmentById(R.id.task_details_container)
-//                 removeEditFragment(fragment)
                  if ((fragment is AddEditFragment) && fragment.isDirty()){
                      showConfirmationDialog(DIALOG_ID_CANCEL,
                          getString(R.string.cancel_diegg_message),
@@ -156,9 +158,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
 
     private fun taskEdiRequest(task:Task?){
-//        val newInstance = AddEditFragment.newInstance(task)
-//        supportFragmentManager.beginTransaction().replace(R.id.task_details_container,newInstance).commit()
-
         replaceFragment(AddEditFragment.newInstance(task),R.id.task_details_container)
         showFragment()
     }
@@ -171,7 +170,7 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
         builder.setTitle(R.string.app_name)
         builder.setIcon(R.drawable.ic_launcher_foreground)
 
-        builder.setPositiveButton(R.string.ok){dialog,which ->
+        builder.setPositiveButton(R.string.ok){ _, _ ->
             if(aboutDialog != null && aboutDialog?.isShowing == true) run {
                 aboutDialog?.dismiss()
             }
@@ -197,6 +196,15 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
 
     }
 
+    override fun onStop() {
+        Log.d(TAG, "onStop: called")
+        super.onStop()
+        if(aboutDialog?.isShowing == true){
+            aboutDialog?.dismiss()
+        }
+    }
+
+    // TODO: Deleting all function than will be released.
     // Login mainActivity lifecycle
     override fun onStart() {
         Log.d(TAG, "onStart: called")
@@ -222,14 +230,6 @@ class MainActivity : AppCompatActivity() ,AddEditFragment.OnSaveClicked,MainActi
     override fun onSaveInstanceState(outState: Bundle) {
         Log.d(TAG, "onSaveInstanceState: called")
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onStop() {
-        Log.d(TAG, "onStop: called")
-        super.onStop()
-        if(aboutDialog?.isShowing == true){
-            aboutDialog?.dismiss()
-        }
     }
 
     override fun onDestroy() {

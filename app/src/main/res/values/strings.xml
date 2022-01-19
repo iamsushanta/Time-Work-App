@@ -56,4 +56,6 @@
     <string name="date_title_filter">Date Filter</string>
     <string name="optionDeleteSelecte">Date is deleted</string>
     <string name="deleteSureTitle">"If you sure you deleted timing record %1$s"</string>
+    <string name="whenTabTimingStart">whenTabTimingStart</string>
+    <string name="enter_endTiming">End Timing Add</string>
 </resources>

@@ -12,7 +12,7 @@ import android.util.Log
 
 private const val TAG = "AppDataBase"
 const val DATABASE_NAME = "TimeWork.db"
-const val DATABASE_VERSION = 4
+const val DATABASE_VERSION = 5
 
 internal class AppDataBase private constructor(context: Context) : SQLiteOpenHelper(
     context, DATABASE_NAME,
@@ -40,6 +40,7 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         addTimingTable(db)
         addCurrentTimingView(db)
         addDuration(db)
+        parametersView(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -49,13 +50,21 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
                  addTimingTable(db)
                 addCurrentTimingView(db)
                 addDuration(db)
+                parametersView(db)
 
             }
             2 -> {
                 addCurrentTimingView(db)
                 addDuration(db)
+                parametersView(db)
             }
-            3 -> addDuration(db)
+            3 -> {
+                addDuration(db)
+                parametersView(db)
+            }
+            4 -> {
+                parametersView(db)
+            }
             else -> {
                 Log.d(TAG,"Exception Unknown newVersion $newVersion")
             }
@@ -149,23 +158,61 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         db.execSQL(sSQLDurationView)
     }
 
+    private fun parametersView(db: SQLiteDatabase){
+        var sSQL = """CREATE TABLE ${ParametersContract.TABLE_NAME}
+        (${ParametersContract.Collum.ID} INTEGER PRIMARY KEY NOT NULL,
+        ${ParametersContract.Collum.VALUE} INTEGER NOT NULL);""".trimMargin()
+        Log.d(TAG,sSQL)
+
+        db.execSQL(sSQL)
+        sSQL = "DROP VIEW IF EXISTS ${DurationsContract.TABLE_NAME};"
+
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+
+        /**
+        CREATE VIEW vwTaskDurations AS
+        SELECT Tasks.Name,
+        Tasks.Description,
+        Timings.StartTime,
+        DATE(Timings.StartTime, 'unixepoch') AS StartDate,
+        SUM(Timings.Duration) AS Duration
+        FROM Tasks INNER JOIN Timings
+        ON Tasks._id = Timings.TaskId
+        WHERE Timings.Duration > (SELECT Parameters.value FROM Parameters WHERE Parameters._id = 1)
+        GROUP BY Tasks._id, StartDate;
+         **/
+
+        sSQL = """CREATE VIEW ${DurationsContract.TABLE_NAME}
+            AS SELECT ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_NAME},
+            ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_DESCRIPTION},
+            ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_START_TIME},
+            DATE(${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_START_TIME}, 'unixepoch', 'localtime')
+            AS ${DurationsContract.Collum.START_DATE},
+            SUM(${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_DURATION})
+            AS ${DurationsContract.Collum.DURATION}
+            FROM ${TaskContract.TABLE_NAME} INNER JOIN ${TimingContract.TABLE_NAME}
+            ON ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_ID} =
+            ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_ID}
+            WHERE ${TimingContract.TABLE_NAME}.${TimingContract.Collum.TIMING_TASK_DURATION} >
+                (SELECT ${ParametersContract.TABLE_NAME}.${ParametersContract.Collum.VALUE}
+                FROM ${ParametersContract.TABLE_NAME}
+                WHERE ${ParametersContract.TABLE_NAME}.${ParametersContract.Collum.ID} = ${ParametersContract.ID_SHORT_TIMING})
+            GROUP BY ${TaskContract.TABLE_NAME}.${TaskContract.Collum.TASK_ID}, ${DurationsContract.Collum.START_DATE}
+            ;""".replaceIndent(" ")
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+
+        sSQL = """INSERT INTO ${ParametersContract.TABLE_NAME} VALUES (${ParametersContract.ID_SHORT_TIMING}, 0);"""
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+
+    }
+
 
 
 
     // This code SingletonHolder Class call easy way for understand
     companion object : SingletonHolder<AppDataBase,Context> (::AppDataBase)
 
-
-//    companion object {
-//
-//
-//        @Volatile
-//        var instance:AppDataBase? = null
-//
-//        fun getInstance(context: Context):AppDataBase =
-//         instance ?: synchronized(AppDataBase)  {
-//             instance ?: AppDataBase(context).also { instance = it }
-//         }
-//
-//    }
 }

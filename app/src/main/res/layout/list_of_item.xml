@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="8dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -16,8 +17,7 @@
         android:textSize="22sp"
         app:layout_constraintEnd_toStartOf="@+id/editTaskButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/DescriptionOfTask"
@@ -36,25 +36,24 @@
         android:id="@+id/editTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:contentDescription="@string/EditTask"
-        app:layout_constraintBottom_toBottomOf="@+id/deleteTaskButton"
-        app:layout_constraintEnd_toStartOf="@+id/deleteTaskButton"
-        app:layout_constraintTop_toTopOf="@+id/deleteTaskButton"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/startTiming"
+        app:layout_constraintTop_toTopOf="@+id/titleOfTask"
         app:srcCompat="@android:drawable/ic_menu_edit"
         tools:ignore="SpeakableTextPresentCheck,ImageContrastCheck" />
 
+
     <ImageButton
-        android:id="@+id/deleteTaskButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/startTiming"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:contentDescription="@string/Task_Delete"
+        android:contentDescription="@string/whenTabTimingStart"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_delete"
-        tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+        app:layout_constraintTop_toTopOf="@+id/editTaskButton"
+        app:srcCompat="@drawable/ic_baseline_not_started_24"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

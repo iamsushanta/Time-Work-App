@@ -8,8 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.DatePicker
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_durations.*
 import kotlinx.android.synthetic.main.task_details.*
@@ -28,7 +28,8 @@ class DurationsReport : AppCompatActivity() , View.OnClickListener,
     AppDialog.DialogEvents,
      DatePickerDialog.OnDateSetListener{
 
-    private val durationsViewModel by lazy {ViewModelProviders.of(this).get(DurationsViewModel::class.java)}
+//    private val durationsViewModel by lazy { ViewModelProvider(this).get(DurationsViewModel::class.java)}
+    private val durationsViewModel :DurationsViewModel by viewModels()
     private val reportAdapter by lazy{DurationRVAdapter(this,null)}
 
 

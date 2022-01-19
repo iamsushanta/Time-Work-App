@@ -1,5 +1,6 @@
 package iamzen.`in`.timework
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.*
 import android.content.Context.MODE_PRIVATE
@@ -7,12 +8,14 @@ import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -28,7 +31,7 @@ private const val TAG = "DurationsViewModel"
 class DurationsViewModel(application: Application): AndroidViewModel(application) {
 
 
-    private val contentObserver = object : ContentObserver(Handler()){
+    private val contentObserver = object : ContentObserver(Handler(Looper.myLooper()!!)){
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             Log.d(TAG,"On change starts ")
             loadData()
@@ -100,6 +103,7 @@ class DurationsViewModel(application: Application): AndroidViewModel(application
         calendar.firstDayOfWeek = _firstDay
 
         application.contentResolver.registerContentObserver(TimingContract.CONTENT_URI,true,contentObserver)
+       application.contentResolver.registerContentObserver(ParametersContract.CONTENT_URI,true,contentObserver)
         val brodCrustFilter = IntentFilter(Intent.ACTION_TIMEZONE_CHANGED)
         brodCrustFilter.addAction(Intent.ACTION_LOCALE_CHANGED)
         application.registerReceiver(brodCrustReceiver,brodCrustFilter)
@@ -170,6 +174,7 @@ class DurationsViewModel(application: Application): AndroidViewModel(application
         loadData()
     }
 
+    @SuppressLint("Recycle")
     @DelicateCoroutinesApi
     private fun loadData(){
         val order = when (shortOrder){
@@ -181,7 +186,7 @@ class DurationsViewModel(application: Application): AndroidViewModel(application
 
         Log.d(TAG,"load Data order id $order")
 
-        GlobalScope.launch{
+        viewModelScope.launch(Dispatchers.IO){
             Log.d(TAG,"selection is selection $selection args is $selectionArgs, order is $order")
             val cursor = getApplication<Application>().contentResolver.query(
                 DurationsContract.CONTENT_URI,
@@ -189,7 +194,7 @@ class DurationsViewModel(application: Application): AndroidViewModel(application
                 selection,
                 selectionArgs,
                 order)
-            databaseCursor.postValue(cursor)
+            databaseCursor.postValue(cursor!!)
             Log.d(TAG,"cursor is $cursor ")
         }
     }
@@ -202,7 +207,7 @@ class DurationsViewModel(application: Application): AndroidViewModel(application
         val selectionArgs = arrayOf(delDuration.toString())
         val selection = "${TimingContract.Collum.TIMING_START_TIME} < ?"
 
-        GlobalScope.launch{
+        viewModelScope.launch(Dispatchers.IO){
             getApplication<Application>().contentResolver.delete(TimingContract.CONTENT_URI,selection,selectionArgs)
         }
 
@@ -214,6 +219,7 @@ class DurationsViewModel(application: Application): AndroidViewModel(application
         Log.d(TAG,"OnCleared called")
         getApplication<Application>().contentResolver.unregisterContentObserver(contentObserver)
         getApplication<Application>().unregisterReceiver(brodCrustReceiver)
+        databaseCursor.value?.close()
         setting.unregisterOnSharedPreferenceChangeListener(settingListener)
     }
 

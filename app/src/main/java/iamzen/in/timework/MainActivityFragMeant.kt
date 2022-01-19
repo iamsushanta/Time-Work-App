@@ -1,53 +1,80 @@
 package iamzen.`in`.timework
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_main_acitivity_frag_ment.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
- * A simple [Fragment] subclass.
- * Use the [MainActivityFragMent.newInstance] factory method to
+ * A simple [@Fragment] subclass.
+ * Use the [@MainActivityFragMeant.newInstance] factory method to
  * create an instance of this fragment.
  */
 private const val TAG = "MainActivityFragment"
 private const val DIALOG_ID_DELETED = 1
 private const val DIALOG_TASK_ID = "task_id"
+private const val DIALOG_TASK_POSITION = "task_position"
 
+@DelicateCoroutinesApi
 class MainActivityFragMeant : Fragment(),
     CursorRecyclerViewAdapter.WorkingButton,
-    AppDialog.DialogEvents{
+    AppDialog.DialogEvents {
+
+    @DelicateCoroutinesApi
+//    private val mViewModel by lazy{ ViewModelProvider(this).get(TimeWorkViewModel::class.java)}
+    private val mViewModel: TimeWorkViewModel by activityViewModels()
+    private val mAdapter = CursorRecyclerViewAdapter(null, this)
+//    var mCheckTimingStart = true
+
+//    var count = 0
+//    private var timer: CountDownTimer = object : CountDownTimer(20000, 1000) {
+//        @SuppressLint("StringFormatMatches", "StringFormatInvalid")
+//        override fun onTick(millisUntilFinished: Long) {
+//            mCheckTimingStart = false
+//            Log.d(TAG, "timing start ${millisUntilFinished / 1000} $mCheckTimingStart")
+//            count = (millisUntilFinished / 1000).toInt()
+//            DisplayTitle.text = getString(R.string.TimingRecordShow, count)
+//
+//        }
+//
+//
+//        @SuppressLint("StringFormatInvalid")
+//        override fun onFinish() {
+//            Log.d(TAG, "timing end")
+//            DisplayTitle.text = getString(R.string.MainTitle)
+//            startTiming.setImageResource(R.drawable.ic_baseline_not_started_24)
+//        }
+//    } // countDown end bracelets
 
 
-    private val mViewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
-    private val mAdapter = CursorRecyclerViewAdapter(null,this)
-
+    @SuppressLint("StringFormatMatches")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"onCreated starts")
-        mViewModel.cursor.observe(this, { cursor -> mAdapter.swapCursor(cursor)?.close()})
-        mViewModel.timing.observe(this, Observer<String>{
-
-                timings -> DisplayTitle.text = if (timings != null){
-                    Log.d(TAG,"Timings starts is called")
-                    getString(R.string.TimingRecordShow,timings)
-        } else{
-            Log.d(TAG,"Timing is not starts ")
-            getString(R.string.MainTitle)
-        }
+        Log.d(TAG, "onCreated starts")
+        mViewModel.cursor.observe(this, { cursor -> mAdapter.swapCursor(cursor)?.close() })
+        mViewModel.timing.observe(this, { timing ->
+             if (timing != null) {
+                DisplayTitle.text = getString(R.string.TimingRecordShow,timing)
+            } else {
+                 DisplayTitle.text = getString(R.string.MainTitle)
+            }
         })
+
+
     }
 
     override fun onCreateView(
@@ -55,8 +82,8 @@ class MainActivityFragMeant : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG,"onCreateView starts")
-        return inflater.inflate(R.layout.fragment_main_acitivity_frag_ment,container,false)
+        Log.d(TAG, "onCreateView starts")
+        return inflater.inflate(R.layout.fragment_main_acitivity_frag_ment, container, false)
 
     }
 
@@ -66,21 +93,108 @@ class MainActivityFragMeant : Fragment(),
     }
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated: called")
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG,"listOfItem starts")
+        Log.d(TAG, "listOfItem starts")
 
         List_Of_Item.layoutManager = LinearLayoutManager(context)
         List_Of_Item.adapter = mAdapter
 
+        // swipe delete is created in this app
+        val itemTouchHelper = ItemTouchHelper(
+            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    Log.d(TAG, "ItemTouchHelper onMove is called")
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    Log.d(TAG, "ItemTouchHelper onSwipe is called")
+                    if (direction == ItemTouchHelper.LEFT) {
+                        val task = (viewHolder as TaskViewHolder).task
+                        if (task.id == mViewModel.editTaskId) {
+                            mAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                            Toast.makeText(
+                                context,
+                                "You can`t not deleted task task currently edited.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            deleteTask(task, viewHolder.adapterPosition)
+                        }
+                    }
+                }
+            }
+        )
+
+        itemTouchHelper.attachToRecyclerView(List_Of_Item)
+
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onActivityCreated: called")
-        super.onActivityCreated(savedInstanceState)
+    interface ManageWorkingButton {
+        fun editTaskButton(task: Task)
+
     }
+
+    // working Button interface is implement
+    override fun editTask(task: Task) {
+        (activity as ManageWorkingButton?)?.editTaskButton(task)
+    }
+
+    fun deleteTask(task: Task, position: Int) {
+        Log.d(TAG, "deleteTask called ")
+
+        val args = Bundle().apply {
+            putInt(DIALOG_ID, DIALOG_ID_DELETED)
+            putString(
+                DIALOG_MESSAGE,
+                getString(R.string.dialog_message_delete, task.id, task.Name)
+            )
+            putInt(DIALOG_POSITIVE, R.string.delete_dialog)
+            putLong(
+                DIALOG_TASK_ID,
+                task.id
+            ) // pass  the id in the arguments .so we can retrieve id than what task callback.
+            putInt(DIALOG_TASK_POSITION, position)
+        }
+
+        val dialog = AppDialog()
+        dialog.arguments = args
+        dialog.show(childFragmentManager, null)
+
+    }
+
+    override fun startTimingTab(task: Task) {
+        Log.d(TAG, "longClick called")
+        mViewModel.timingTask(task)
+    }
+
+
+    override fun setOnPositiveRid(dialogId: Int, args: Bundle) {
+        Log.d(TAG, "setOnPositiveRid called dialog id is $dialogId")
+
+        if (dialogId == DIALOG_ID_DELETED) {
+            val taskId = args.getLong(DIALOG_TASK_ID)
+            if (BuildConfig.DEBUG && taskId == 0L) throw AssertionError("task id is 0")
+            mViewModel.deleteTask(taskId)
+        }
+    }
+
+    override fun setOnNegativeRid(dialogId: Int, args: Bundle) {
+        Log.d(TAG, "setOnNegativeRid is called")
+        if (dialogId == DIALOG_ID_DELETED) {
+            val position = args.getInt(DIALOG_TASK_POSITION)
+            Log.d(TAG, "item is  not deleted position is $position ")
+            mAdapter.notifyItemChanged(position)
+        }
+    }
+
+    //TODO: Deleting function before releasing app.
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewStateRestored: called")
@@ -126,53 +240,5 @@ class MainActivityFragMeant : Fragment(),
         Log.d(TAG, "onDetach: called")
         super.onDetach()
     }
-
-    // working Button interface is implement
-    override fun editTask(task: Task) {
-        (activity as ManageWorkingButton?)?.editTaskButton(task)
-    }
-
-    override fun deleteTask(task: Task) {
-        Log.d(TAG,"deleteTask called ")
-        val args = Bundle().apply {
-            putInt(DIALOG_ID,DIALOG_ID_DELETED)
-            putString(DIALOG_MESSAGE,getString(R.string.dialog_message_delete,task.id,task.Name))
-            putInt(DIALOG_POSITIVE,R.string.delete_dialog)
-            putLong(DIALOG_TASK_ID,task.id) // pass  the id in the arguments .so we can retrieve id than what task callback.
-            }
-
-        val dialog = AppDialog()
-        dialog.arguments = args
-        dialog.show(childFragmentManager,null)
-    }
-
-    override fun longClick(task: Task) {
-        Log.d(TAG,"longClick called")
-        mViewModel.timingTask(task)
-    }
-
-    interface ManageWorkingButton{
-        fun editTaskButton(task: Task)
-
-    }
-
-    override fun setOnPositiveRid(dialogId: Int, args: Bundle) {
-        Log.d(TAG,"setOnPositiveRid called dialog id is $dialogId")
-
-        if (dialogId == DIALOG_ID_DELETED){
-            val taskId = args.getLong(DIALOG_TASK_ID)
-            if(BuildConfig.DEBUG && taskId == 0L) throw AssertionError("task id is 0")
-            mViewModel.deleteTask(taskId)
-        }
-    }
-
-//    override fun setOnNegativeRid(dialogId: Int, args: Bundle) {
-//
-//        Log.d(TAG,"setONNegativeRid called")
-//    }
-//
-//    override fun setOnCancel(dialogId: Int) {
-//
-//        Log.d(TAG,"setOnCancel called")
-//    }
 }
+

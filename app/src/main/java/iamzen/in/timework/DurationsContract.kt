@@ -8,7 +8,6 @@ object DurationsContract {
     val CONTENT_URI: Uri = Uri.withAppendedPath(CONTENT_URI_AUTHORITY, TABLE_NAME)
 
     const val CONTENT_TYPE = "vnd.android.cursor.dir/vnd.$CONTENT_AUTHORITY.$TABLE_NAME"
-    const val CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.$CONTENT_AUTHORITY.$TABLE_NAME"
 
     // Timing field
     object Collum {

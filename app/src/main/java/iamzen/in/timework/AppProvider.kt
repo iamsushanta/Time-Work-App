@@ -18,6 +18,9 @@ private const val TIMING = 200
 private const val TIMING_ID = 201
 private const val CURRENT_TIMING = 300
 private const val TASK_DURATION = 400
+private const val PARAMETER = 500
+private const val PARAMETER_ID = 501
+
 
 val CONTENT_URI_AUTHORITY: Uri = Uri.parse("content://${CONTENT_AUTHORITY}")
 class AppProvider : ContentProvider(){
@@ -36,10 +39,16 @@ class AppProvider : ContentProvider(){
         // Timing Contract add uri
         matcher.addURI(CONTENT_AUTHORITY,TimingContract.TABLE_NAME, TIMING)
         matcher.addURI(CONTENT_AUTHORITY,"${TimingContract.TABLE_NAME}/#", TIMING_ID)
+
+        // Current Timing Contract
         matcher.addURI(CONTENT_AUTHORITY,CurrentTimingContract.TABLE_NAME, CURRENT_TIMING)
 
         // Duration Contract add uri
         matcher.addURI(CONTENT_AUTHORITY,DurationsContract.TABLE_NAME, TASK_DURATION)
+
+        // parameter Contract add uri match
+        matcher.addURI(CONTENT_AUTHORITY,ParametersContract.TABLE_NAME, PARAMETER)
+        matcher.addURI(CONTENT_AUTHORITY,"${ParametersContract.TABLE_NAME}/#", PARAMETER_ID)
         return matcher
 
     }
@@ -72,9 +81,9 @@ class AppProvider : ContentProvider(){
             TIMING -> queryBuilder.tables = TimingContract.TABLE_NAME
             TIMING_ID -> {
                 queryBuilder.tables = TimingContract.TABLE_NAME
-                val taskId = TimingContract.getId(uri)
+                val timingId = TimingContract.getId(uri)
                 queryBuilder.appendWhere("${TimingContract.Collum.ID} = ")
-                queryBuilder.appendWhereEscapeString("$taskId")
+                queryBuilder.appendWhereEscapeString("$timingId")
             }
 
             CURRENT_TIMING -> {
@@ -83,6 +92,15 @@ class AppProvider : ContentProvider(){
 
             TASK_DURATION -> {
                 queryBuilder.tables = DurationsContract.TABLE_NAME
+            }
+            PARAMETER -> {
+                queryBuilder.tables = ParametersContract.TABLE_NAME
+            }
+            PARAMETER_ID -> {
+                queryBuilder.tables = ParametersContract.TABLE_NAME
+                val parameterId = ParametersContract.getId(uri)
+                queryBuilder.appendWhere("${ParametersContract.Collum.ID} = ")
+                queryBuilder.appendWhereEscapeString("$parameterId")
             }
 
 
@@ -113,6 +131,8 @@ class AppProvider : ContentProvider(){
             CURRENT_TIMING -> CurrentTimingContract.CONTENT_ITEM_TYPE
 
             TASK_DURATION -> DurationsContract.CONTENT_TYPE
+            PARAMETER -> ParametersContract.CONTENT_TYPE
+            PARAMETER_ID -> ParametersContract.CONTENT_ITEM_TYPE
 
             else -> throw IllegalArgumentException("uri not Match ")
         }
@@ -246,7 +266,7 @@ class AppProvider : ContentProvider(){
                 selectionCriteria = "${TaskContract.Collum.TASK_ID} = $id"
                 
                 if(selection != null && selection.isNotEmpty()){
-                    selectionCriteria += "AND $selection"
+                    selectionCriteria += "AND ($selection)"
                 } 
                 count = db.update(TaskContract.TABLE_NAME,values,selectionCriteria,selectionArgs)
                 
@@ -262,10 +282,20 @@ class AppProvider : ContentProvider(){
                 selectionCriteria = "${TimingContract.Collum.ID} = $id"
                 
                 if(selection != null && selection.isNotEmpty()){
-                    selectionCriteria += "AND $selection"
+                    selectionCriteria += "AND ($selection)"
                 } 
-                count = db.update(TimingContract.TABLE_NAME,values,selection,selectionArgs)
+                count = db.update(TimingContract.TABLE_NAME,values,selectionCriteria,selectionArgs)
                 
+            }
+
+            PARAMETER_ID -> {
+                val db = AppDataBase.getInstance(context).writableDatabase
+                val id = ParametersContract.getId(uri)
+                selectionCriteria = "${ParametersContract.Collum.ID} = $id"
+                if(selection != null && selection.isNotEmpty()){
+                    selectionCriteria += "AND ($selection)"
+                }
+                count = db.update(ParametersContract.TABLE_NAME,values,selectionCriteria,selectionArgs)
             }
             else -> throw IllegalArgumentException("unknown uri $uri")
         }

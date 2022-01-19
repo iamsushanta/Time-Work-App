@@ -32,7 +32,7 @@ class SettingDialog : AppCompatDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate called.")
         super.onCreate(savedInstanceState)
-        setStyle(AppCompatDialogFragment.STYLE_NORMAL, R.style.SettingsDialogStyle)
+        setStyle(STYLE_NORMAL, R.style.SettingsDialogStyle)
     }
 
     override fun onCreateView(
@@ -157,17 +157,11 @@ class SettingDialog : AppCompatDialogFragment() {
 //                putInt(SETTING_FIRST_DAY,newFirstDay)
 //            }
 //            if(newIgnoreLess != ignoreLessThan){
-//                putInt(SETTING_IGNORE_LESSTHAN,newIgnoreLess)
+//                putInt(SETTING_IGNORE_LESS_THAN,newIgnoreLess)
 //            }
 //            apply()
 //        }
         Log.d(TAG, "saveDay value ends: newFirst day $newFirstDay newIgnoreLessThan $newIgnoreLess")
 
     }
-
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy called...")
-        super.onDestroy()
-    }
-
 }

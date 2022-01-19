@@ -5,12 +5,14 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
 import kotlinx.android.synthetic.main.fragment_add_edit.*
+import kotlinx.coroutines.DelicateCoroutinesApi as CoroutinesDelicateCoroutinesApi
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,18 +25,29 @@ private const val ARG_TASK = "task"
  */
 
 private const val TAG = "AddEditFragment"
+
+@kotlinx.coroutines.DelicateCoroutinesApi
 class AddEditFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var task: Task? = null
     private var listener:OnSaveClicked? = null
 
-    private val viewModel by lazy{ ViewModelProviders.of(this).get(TimeWorkViewModel::class.java)}
+    @CoroutinesDelicateCoroutinesApi
+//    private val viewModel by lazy{ ViewModelProvider(this).get(TimeWorkViewModel::class.java)}
+    private val viewModel : TimeWorkViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"OnCreate starts")
         super.onCreate(savedInstanceState)
         task = arguments?.getParcelable(ARG_TASK)
+        setHasOptionsMenu(true)
 
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        Log.d(TAG,"onPrepareOptionMenu is called...")
+        menu.clear()
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateView(
@@ -59,6 +72,8 @@ class AddEditFragment : Fragment() {
                 addEditDescription.setText(task.Description)
                 addEditShortOrder.setText(task.ShortOrder?.toString())
 
+                viewModel.startEditing(task.id)
+
             }else{
                 Log.d(TAG,"no argument pass")
             }
@@ -71,6 +86,7 @@ class AddEditFragment : Fragment() {
         val shortOrder = if (addEditShortOrder.text.isNotEmpty()){
             Integer.parseInt(addEditShortOrder.text.toString())
         } else 0
+
 
         val newTask = Task(addEditName.text.toString(),addEditDescription.text.toString(),shortOrder)
         newTask.id = task?.id ?: 0
@@ -89,6 +105,7 @@ class AddEditFragment : Fragment() {
     }
     // add a new task in a databases Or Exiting task will be modified
 
+    @CoroutinesDelicateCoroutinesApi
     private fun saveTask(){
         Log.d(TAG,"save task called ")
         val newTask = taskFromUri()
@@ -98,12 +115,14 @@ class AddEditFragment : Fragment() {
     }
 
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         Log.d(TAG,"onActivityCreated starts")
 
-        if(listener is AppCompatActivity){
-            val actionBar = (listener as AppCompatActivity?)?.supportActionBar
+        if(activity is AppCompatActivity){
+            val actionBar = (activity as AppCompatActivity?)?.supportActionBar
             actionBar?.setDisplayHomeAsUpEnabled(true)
         }
         addEditSubmit.setOnClickListener{
@@ -129,6 +148,7 @@ class AddEditFragment : Fragment() {
         Log.d(TAG,"onDetach starts")
         super.onDetach()
         listener = null
+        viewModel.stopEditing()
     }
 
     companion object {
@@ -150,10 +170,7 @@ class AddEditFragment : Fragment() {
     }
 
 
-
-
-
-
+    //TODO: Deleting all function before release app
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewStateRestored: called")

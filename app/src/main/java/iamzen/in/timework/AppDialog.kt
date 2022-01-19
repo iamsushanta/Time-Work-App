@@ -19,9 +19,9 @@ class AppDialog: AppCompatDialogFragment() {
     private var dialogEvents:DialogEvents? = null
 
     internal interface DialogEvents{
-        fun setOnPositiveRid(dialogId:Int,args: Bundle)
-//        fun setOnNegativeRid(dialogId:Int,args: Bundle)
-//        fun setOnCancel(dialogId:Int)
+        fun setOnPositiveRid(dialogId:Int,args: Bundle){}
+        fun setOnNegativeRid(dialogId:Int,args: Bundle){}
+        fun setOnCancel(dialogId:Int){}
     }
 
     override fun onAttach(context: Context) {
@@ -57,7 +57,7 @@ class AppDialog: AppCompatDialogFragment() {
             dialogId = arguments.getInt(DIALOG_ID)
             dialogMessage = arguments.getString(DIALOG_MESSAGE)
             if (dialogId == 0 || dialogMessage == null){
-                throw IllegalArgumentException("Dialog id and or massage not pressent in bundle")
+                throw IllegalArgumentException("Dialog id and or massage not present in bundle")
             }
 
             dialogPositive = arguments.getInt(DIALOG_POSITIVE)
@@ -72,11 +72,11 @@ class AppDialog: AppCompatDialogFragment() {
 
 
         return builder.setMessage(dialogMessage)
-            .setPositiveButton(dialogPositive){dialogInterface,which ->
+            .setPositiveButton(dialogPositive){ _, _ ->
                     dialogEvents?.setOnPositiveRid(dialogId,arguments)
                 }
-            .setNegativeButton(dialogNegative){dialogInterface ,which ->
-//            dialogEvents?.setOnNegativeRid(dialogId,arguments)
+            .setNegativeButton(dialogNegative){ _, _ ->
+            dialogEvents?.setOnNegativeRid(dialogId,arguments)
         }.create()
 
 
@@ -91,8 +91,8 @@ class AppDialog: AppCompatDialogFragment() {
 
     override fun onCancel(dialog: DialogInterface) {
         Log.d(TAG,"OnCancel called")
-        val dialogId = arguments?.getInt(DIALOG_ID)
-//        dialogEvents?.setOnCancel(dialogId!!)
+        val dialogId = requireArguments().getInt(DIALOG_ID)
+        dialogEvents?.setOnCancel(dialogId)
     }
 
 }
